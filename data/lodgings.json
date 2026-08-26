@@ -1,0 +1,12 @@
+[
+  {
+    "name": "aa",
+    "facility": "VIP",
+    "roomCapacity": 3,
+    "imgUrl": "http://arah.in/memes-1",
+    "location": "Jakarta",
+    "price": 1000000,
+    "typeId": 1,
+    "authorId": 1
+  }
+]

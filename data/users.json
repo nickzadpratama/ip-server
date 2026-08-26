@@ -1,0 +1,18 @@
+[
+  {
+    "username": "nick",
+    "email": "nick@gmail.com",
+    "password": "12abcd",
+    "role": "Admin",
+    "phoneNumber": "021123456",
+    "address": "Jakarta"
+  },
+  {
+    "username": "melll",
+    "email": "melati@gmail.com",
+    "password": "321rewqt",
+    "role": "Staff",
+    "phoneNumber": "021123444",
+    "address": "Yogyakarta"
+  }
+]
