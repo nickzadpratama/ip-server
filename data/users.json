@@ -3,7 +3,7 @@
     "username": "nick",
     "email": "nick@gmail.com",
     "password": "12abcd",
-    "role": "Admin",
+    "role": "admin",
     "phoneNumber": "021123456",
     "address": "Jakarta"
   },
@@ -11,7 +11,7 @@
     "username": "melll",
     "email": "melati@gmail.com",
     "password": "321rewqt",
-    "role": "Staff",
+    "role": "admin",
     "phoneNumber": "021123444",
     "address": "Yogyakarta"
   }

@@ -1,12 +1,22 @@
 [
   {
-    "name": "aa",
+    "name": "aac",
     "facility": "VIP",
     "roomCapacity": 3,
-    "imgUrl": "http://arah.in/memes-1",
+    "imgUrl": "http://arah.in/memes-3",
     "location": "Jakarta",
     "price": 1000000,
     "typeId": 1,
     "authorId": 1
+  },
+  {
+    "name": "aabb",
+    "facility": "AC",
+    "roomCapacity": 3,
+    "imgUrl": "http://arah.in/memes-2",
+    "location": "Yogyakarta",
+    "price": 1500000,
+    "typeId": 1,
+    "authorId": 2
   }
 ]

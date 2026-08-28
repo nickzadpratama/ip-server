@@ -1,251 +1,194 @@
-const { Lodging } = require("../models");
+const { Op } = require("sequelize");
+const { Lodging, User } = require("../models");
+const ImageKit = require("@imagekit/nodejs");
+const upload = require("../utils/multer");
 
 class LodgingController {
-  static async read(req, res) {
+  static async read(req, res, next) {
     try {
-      const lodgings = await Lodging.findAll({
+      const { filter, sort } = req.query;
+      const option = {
+        include: {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-      });
+      };
+
+      if (filter) {
+        option.where = {
+          name: {
+            [Op.iLike]: `%${filter}%`,
+          },
+        };
+      }
+
+      if (sort) {
+        const ordering = sort[0] === "-" ? "DESC" : "ASC";
+        const colomnName = ordering === "DESC" ? sort.slice(1) : sort;
+
+        option.order = [[colomnName, ordering]];
+      }
+
+      const lodgings = await Lodging.findAll(option);
       res.status(200).json({
         massage: "Succeed read data Lodging",
         data: lodgings,
       });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        message: "Internal server error",
-      });
+      next(error);
     }
   }
 
-  static async create(req, res) {
+  static async create(req, res, next) {
     try {
       const { id } = req.logInfo;
 
-      const {
-        name,
-        description,
-        totalPrize,
-        eventPoster,
-        eventDate,
-        eventType,
-        eventStatus,
-        GameId,
-      } = req.body;
+      const { name, facility, roomCapacity, imgUrl, location, price, typeId } =
+        req.body;
 
-      const event = await Event.create({
+      const lodging = await Lodging.create({
         name,
-        description,
-        totalPrize,
-        eventPoster,
-        eventDate,
-        eventType,
-        eventStatus,
-        GameId,
-        id,
+        facility,
+        roomCapacity,
+        imgUrl,
+        location,
+        price,
+        typeId,
+        authorId: id,
       });
 
-      delete event.dataValues.createdAt;
-      delete event.dataValues.updatedAt;
-      res.status(200).json({
-        massage: "Succeed create data events",
-        data: event,
+      delete lodging.dataValues.createdAt;
+      delete lodging.dataValues.updatedAt;
+      res.status(201).json({
+        massage: "Succeed create data lodging",
+        lodging: lodging,
       });
     } catch (error) {
-      let status = 500;
-      let message = "Internal server error";
-
-      if (error.name === "SequelizeValidationError") {
-        message = error.errors[0].message;
-        status = 400;
-      }
-
-      if (
-        error.name === "SequelizeDatabaseError" ||
-        error.name === "SequelizeForeignKeyConstraintError"
-      ) {
-        status = 400;
-        message = "Invalid input";
-      }
-
-      res.status(status).json({ message });
+      next(error);
     }
   }
 
-  //   static async readById(req, res) {
-  //     try {
-  //       const { id } = req.params;
-  //       const event = await Event.findByPk(id, {
-  //         attributes: {
-  //           exclude: ["createdAt", "updatedAt"],
-  //         },
-  //       });
+  static async lodgingById(req, res, next) {
+    try {
+      const { id } = req.params;
+      const lodging = await Lodging.findByPk(id, {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
 
-  //       if (!event) {
-  //         throw { name: "NotFound" };
-  //       }
+      if (!lodging) {
+        throw { name: "NotFound" };
+      }
 
-  //       res.status(200).json({
-  //         massage: "Succeed read detail event",
-  //         data: event,
-  //       });
-  //     } catch (error) {
-  //       let status = 500;
-  //       let message = "Internal server error";
+      res.status(200).json({
+        massage: "Succeed read detail lodging",
+        data: lodging,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  //       if (error.name === "NotFound") {
-  //         status = 404;
-  //         message = "Data not found";
-  //       }
+  static async update(req, res, next) {
+    try {
+      const { id } = req.params;
+      const lodging = await Lodging.findByPk(id, {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
 
-  //       res.status(status).json({ message });
-  //     }
-  //   }
+      if (!lodging) {
+        throw { name: "NotFound" };
+      }
 
-  //   static async delete(req, res) {
-  //     try {
-  //       console.log("a");
-  //       const { id } = req.params;
-  //       const event = await Event.findByPk(id, {
-  //         attributes: {
-  //           exclude: ["createdAt", "updatedAt"],
-  //         },
-  //       });
+      const {
+        name,
+        facility,
+        roomCapacity,
+        imgUrl,
+        location,
+        price,
+        typeId,
+        authorId,
+      } = req.body;
 
-  //       if (!event) {
-  //         throw { name: "NotFound" };
-  //       }
+      await lodging.update({
+        name,
+        facility,
+        roomCapacity,
+        imgUrl,
+        location,
+        price,
+        typeId,
+        authorId,
+      });
 
-  //       await event.destroy();
+      res.status(200).json({
+        massage: "Succeed update data lodging",
+        data: lodging,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  //       res.status(200).json({
-  //         massage: "Succeed delete data event",
-  //         data: event,
-  //       });
-  //     } catch (error) {
-  //       let status = 500;
-  //       let message = "Internal server error";
+  static async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      const lodging = await Lodging.findByPk(id, {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
 
-  //       if (error.name === "NotFound") {
-  //         status = 404;
-  //         message = "Data not found";
-  //       }
+      if (!lodging) {
+        throw { name: "NotFound" };
+      }
 
-  //       res.status(status).json({ message });
-  //     }
-  //   }
+      await lodging.destroy();
 
-  //   static async update(req, res) {
-  //     try {
-  //       const { id } = req.params;
-  //       const event = await Event.findByPk(id, {
-  //         attributes: {
-  //           exclude: ["createdAt", "updatedAt"],
-  //         },
-  //       });
+      res.status(200).json({
+        massage: `${lodging.name} succeed to delete`,
+        data: lodging,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  //       if (!event) {
-  //         throw { name: "NotFound" };
-  //       }
+  static async updateImage(req, res, next) {
+    try {
+      const { id } = req.params;
 
-  //       const {
-  //         name,
-  //         description,
-  //         totalPrize,
-  //         eventPoster,
-  //         eventDate,
-  //         eventType,
-  //         GameId,
-  //       } = req.body;
+      const lodging = await Lodging.findByPk(id);
 
-  //       await event.update({
-  //         name,
-  //         description,
-  //         totalPrize,
-  //         eventPoster,
-  //         eventDate,
-  //         eventType,
-  //         GameId,
-  //       });
+      const client = new ImageKit({
+        privateKey: "private_gCazD3zMSodFQ0BXpcaAgKJ06/4=",
+      });
 
-  //       res.status(200).json({
-  //         massage: "Succeed update data event",
-  //         data: event,
-  //       });
-  //     } catch (error) {
-  //       let status = 500;
-  //       let message = "Internal server error";
+      const result = await client.files.upload({
+        file: await ImageKit.toFile(Buffer.from(req.file.buffer), "file"),
+        fileName: req.file.originalname,
+      });
 
-  //       if (error.name === "NotFound") {
-  //         status = 404;
-  //         message = "Data not found";
-  //       }
+      lodging.update({
+        imgUrl: result.url,
+      });
 
-  //       if (error.name === "SequelizeValidationError") {
-  //         message = error.errors[0].message;
-  //         status = 400;
-  //       }
-
-  //       if (
-  //         error.name === "SequelizeDatabaseError" ||
-  //         error.name === "SequelizeForeignKeyConstraintError"
-  //       ) {
-  //         status = 400;
-  //         message = "Invalid input";
-  //       }
-
-  //       res.status(status).json({ message });
-  //     }
-  //   }
-
-  //   static async updateStatus(req, res) {
-  //     try {
-  //       const { id } = req.params;
-  //       const event = await Event.findByPk(id, {
-  //         attributes: {
-  //           exclude: ["createdAt", "updatedAt"],
-  //         },
-  //       });
-
-  //       if (!event) {
-  //         throw { name: "NotFound" };
-  //       }
-
-  //       const { eventStatus } = req.body;
-
-  //       await event.update({ eventStatus });
-
-  //       res.status(200).json({
-  //         massage: "Succeed update event status",
-  //         data: event,
-  //       });
-  //     } catch (error) {
-  //       let status = 500;
-  //       let message = "Internal server error";
-
-  //       if (error.name === "NotFound") {
-  //         status = 404;
-  //         message = "Data not found";
-  //       }
-
-  //       if (error.name === "SequelizeValidationError") {
-  //         message = error.errors[0].message;
-  //         status = 400;
-  //       }
-
-  //       if (
-  //         error.name === "SequelizeDatabaseError" ||
-  //         error.name === "SequelizeForeignKeyConstraintError"
-  //       ) {
-  //         status = 400;
-  //         message = "Invalid input";
-  //       }
-
-  //       res.status(status).json({ message });
-  //     }
-  //   }
+      res.status(200).json({
+        massage: `Image ${lodging.name} success to update`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = LodgingController;
