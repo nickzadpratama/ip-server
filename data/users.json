@@ -14,5 +14,13 @@
     "role": "admin",
     "phoneNumber": "021123444",
     "address": "Yogyakarta"
+  },
+  {
+    "username": "nickz",
+    "email": "nickz@gmail.com",
+    "password": "12345",
+    "role": "staff",
+    "phoneNumber": "021123433",
+    "address": "Depok"
   }
 ]

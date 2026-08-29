@@ -13,7 +13,8 @@ router.post("/", async (req, res, next) => {
   res.send("This is Mami kos Server");
 });
 
-router.get("/pub/lodgings", LodgingController.read);
+router.get("/pub/lodgings", LodgingController.readPub);
+router.get("/pub/lodgings/:type", LodgingController.readPubByType);
 router.get("/pub/lodgings/:id", LodgingController.read);
 router.get("/pub/types", TypeController.read);
 

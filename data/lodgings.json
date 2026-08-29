@@ -1,21 +1,201 @@
 [
   {
-    "name": "aac",
-    "facility": "VIP",
-    "roomCapacity": 3,
-    "imgUrl": "http://arah.in/memes-3",
-    "location": "Jakarta",
-    "price": 1000000,
+    "name": "Kos Singgahsini Graha Ananta",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Kasur Spring Bed, Lemari Pakaian, Meja Kerja, Penjaga 24 Jam, CCTV",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-06/graha-ananta-1.jpg",
+    "location": "Kuningan, Setiabudi, Jakarta Selatan",
+    "price": 2500000,
     "typeId": 1,
     "authorId": 1
   },
   {
-    "name": "aabb",
-    "facility": "AC",
-    "roomCapacity": 3,
-    "imgUrl": "http://arah.in/memes-2",
-    "location": "Yogyakarta",
+    "name": "Kost Apik Duren Sawit Tipe A",
+    "facility": "Kipas Angin, Kasur Single, Lemari Baju, Kamar Mandi Luar, WiFi, Parkir Motor",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-08/apik-duren-sawit.jpg",
+    "location": "Duren Sawit, Jakarta Timur",
+    "price": 900000,
+    "typeId": 3,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Putri Muslimah Cantika",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Kasur Busa, Lemari Pakaian, Meja Belajar, Dapur Bersama",
+    "roomCapacity": 2,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2026-01/putri-cantika.jpg",
+    "location": "Tembalang, Semarang, Jawa Tengah",
+    "price": 1300000,
+    "typeId": 2,
+    "authorId": 2
+  },
+  {
+    "name": "Exclusive Stay Grogol Petamburan",
+    "facility": "AC, TV LED, Smart Lock, Kamar Mandi Dalam, Water Heater, Kasur Queen, Balkon, Laundry 15kg",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-11/exclusive-grogol.jpg",
+    "location": "Grogol, Jakarta Barat",
+    "price": 3100000,
+    "typeId": 3,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Asri Tambakbayan UAJY",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Shower, Kloset Duduk, Kasur, Lemari, Parkir Motor Luas",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-09/asri-tambakbayan.jpg",
+    "location": "Babarsari, Sleman, Yogyakarta",
     "price": 1500000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kost Singgahsini Signature Sukolilo",
+    "facility": "AC, Smart TV, WiFi, Kamar Mandi Dalam, Water Heater, Kulkas Mini, Penjaga 24 Jam",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-05/signature-sukolilo.jpg",
+    "location": "Sukolilo, Surabaya, Jawa Timur",
+    "price": 2200000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kost Apik Lowokwaru Tipe B",
+    "facility": "Kipas Angin, Kasur Single, Lemari Baju, Kamar Mandi Luar, WiFi, Ruang Tamu Bersama",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-07/apik-lowokwaru.jpg",
+    "location": "Lowokwaru, Malang, Jawa Timur",
+    "price": 750000,
+    "typeId": 2,
+    "authorId": 1
+  },
+  {
+    "name": "Griya Kirana Kost Premium",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Shower, Meja Kerja, Lemari, Kulkas Bersama, CCTV",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-12/griya-kirana.jpg",
+    "location": "Coblong, Bandung, Jawa Barat",
+    "price": 1800000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Putri Kartini Jatinangor",
+    "facility": "Kasur Single, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Dalam, Dapur Bersama",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-10/kartini-jatinangor.jpg",
+    "location": "Jatinangor, Sumedang, Jawa Barat",
+    "price": 1100000,
+    "typeId": 2,
+    "authorId": 2
+  },
+  {
+    "name": "Kost Putra Mahasiswa ITS",
+    "facility": "Kipas Angin, Kasur, Lemari, WiFi, Kamar Mandi Dalam, Parkir Motor, Dispenser Bersama",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-04/putra-its.jpg",
+    "location": "Mulyorejo, Surabaya, Jawa Timur",
+    "price": 850000,
+    "typeId": 3,
+    "authorId": 1
+  },
+  {
+    "name": "The Green Pavilion Kost",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Shower, Kloset Duduk, Meja Belajar, Balkon, Parkir Mobil",
+    "roomCapacity": 2,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2026-02/green-pavilion.jpg",
+    "location": "Depok, Sleman, Yogyakarta",
+    "price": 2000000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kost Apik Palmerah Barat",
+    "facility": "Kipas Angin, Kasur, Lemari, Kamar Mandi Luar, WiFi, Dapur Bersama, Cuci Setrika",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-03/apik-palmerah.jpg",
+    "location": "Palmerah, Jakarta Barat",
+    "price": 950000,
+    "typeId": 3,
+    "authorId": 1
+  },
+  {
+    "name": "Kost Singgahsini Gardenia Kebayoran",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Water Heater, Kasur King Size, TV, Ruang Tamu, Parkir Mobil",
+    "roomCapacity": 2,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-10/gardenia-kebayoran.jpg",
+    "location": "Kebayoran Baru, Jakarta Selatan",
+    "price": 3800000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Putri Cendrawasih UNNES",
+    "facility": "Kasur Busa, Lemari Pakaian, Meja, Kipas Angin, Kamar Mandi Luar, WiFi, Tempat Jemuran",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-06/cendrawasih-unnes.jpg",
+    "location": "Gunungpati, Semarang, Jawa Tengah",
+    "price": 600000,
+    "typeId": 2,
+    "authorId": 1
+  },
+  {
+    "name": "Kost Putra Barito Melawai",
+    "facility": "AC, WiFi, Kasur Single, Lemari Baju, Kamar Mandi Dalam, Kloset Duduk, Parkir Motor",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-11/barito-melawai.jpg",
+    "location": "Kebayoran Baru, Jakarta Selatan",
+    "price": 1700000,
+    "typeId": 3,
+    "authorId": 1
+  },
+  {
+    "name": "Sky High Residence Kost",
+    "facility": "AC, Smart TV, WiFi, Kamar Mandi Dalam, Water Heater, Meja Kerja Minimalis, Gym Mini Bersama",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2026-03/sky-high.jpg",
+    "location": "Cilandak, Jakarta Selatan",
+    "price": 3500000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Putri Lestari UNS",
+    "facility": "Kipas Angin Dinding, Kasur Single, Lemari, Meja Belajar, Kamar Mandi Dalam, WiFi",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-05/lestari-uns.jpg",
+    "location": "Jebres, Surakarta, Jawa Tengah",
+    "price": 800000,
+    "typeId": 2,
+    "authorId": 2
+  },
+  {
+    "name": "Kost Apik Pancoran Mas",
+    "facility": "Kipas Angin, Kasur, Lemari, Kamar Mandi Luar, WiFi, Parkir Motor, Dapur Bersama",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-02/apik-pancoran.jpg",
+    "location": "Pancoran Mas, Depok, Jawa Barat",
+    "price": 700000,
+    "typeId": 1,
+    "authorId": 1
+  },
+  {
+    "name": "Kos Putra Exclusive Sukajadi",
+    "facility": "AC, WiFi, Kamar Mandi Dalam, Shower, Kloset Duduk, Kasur, Lemari, Ruang Santai",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2025-08/exclusive-sukajadi.jpg",
+    "location": "Sukajadi, Bandung, Jawa Barat",
+    "price": 1600000,
+    "typeId": 3,
+    "authorId": 2
+  },
+  {
+    "name": "Urban Living Kost Premium",
+    "facility": "AC, WiFi, TV, Kamar Mandi Dalam, Water Heater, Kasur Queen, Kulkas Bersama, Security 24 Jam",
+    "roomCapacity": 1,
+    "imgUrl": "https://images.mamikos.com/uploads/cache/data/user/2026-01/urban-living.jpg",
+    "location": "Medan Baru, Medan, Sumatera Utara",
+    "price": 2100000,
     "typeId": 1,
     "authorId": 2
   }

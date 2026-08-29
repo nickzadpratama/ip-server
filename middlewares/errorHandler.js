@@ -28,7 +28,7 @@ const errorHandler = (err, req, res, next) => {
     message = "Invalid email or password";
   }
 
-  if (err.name === "Unauthorized" || err.name === "JsonwebTokenError") {
+  if (err.name === "Unauthorized" || err.name === "JsonWebTokenError") {
     status = 401;
     message = "Please login first";
   }

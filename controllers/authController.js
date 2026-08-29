@@ -39,7 +39,7 @@ class AuthController {
         },
       });
 
-      if (!user) throw { name: "LogginError" };
+      if (!user) throw { name: "LoginError" };
 
       if (!comparePassword(password, user.password))
         throw { name: "LoginError" };

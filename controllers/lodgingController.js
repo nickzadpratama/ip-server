@@ -6,7 +6,29 @@ const upload = require("../utils/multer");
 class LodgingController {
   static async read(req, res, next) {
     try {
-      const { filter, sort } = req.query;
+      const lodgings = await Lodging.findAlll({
+        include: {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },})
+      res.status(200).json({
+        message: "Succeed read data Lodging",
+        data: lodgings
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async readPub(req, res, next) {
+    try {
+      const { search, sort, page } = req.query;
+
       const option = {
         include: {
           model: User,
@@ -19,10 +41,10 @@ class LodgingController {
         },
       };
 
-      if (filter) {
+      if (search) {
         option.where = {
           name: {
-            [Op.iLike]: `%${filter}%`,
+            [Op.iLike]: `%${search}%`,
           },
         };
       }
@@ -34,21 +56,72 @@ class LodgingController {
         option.order = [[colomnName, ordering]];
       }
 
-      const lodgings = await Lodging.findAll(option);
+      let limit = 10;
+      let pageNumber = 1;
+      if (page) {
+        if (page.size) {
+          limit = page.size
+          option.limit = limit
+        }
+        if (page.number) {
+          pageNumber = page.number;
+          option.offset = limit * (pageNumber - 1)
+        }
+      }
+
+      const { count, rows } = await Lodging.findAndCountAll(option)
       res.status(200).json({
-        massage: "Succeed read data Lodging",
-        data: lodgings,
+        page: pageNumber,
+        data: rows,
+        totalData: count,
+        totalPage: Math.ceil(count / limit),
+        dataPerPage: limit,
+        message: "Succeed read data Lodgings",
       });
     } catch (error) {
       next(error);
     }
   }
 
+  static async readPubByType(req, res, next) {
+    try {
+      const {type} = req.params;
+
+      let typeId;
+      if (type === "Campur") {
+        typeId = 1
+      } else if (type === "Putri") {
+        typeId = 2
+      } else if (type === "Putra") {
+        typeId = 3
+      }
+
+      const lodgings = await Lodging.findAll({
+        where: {
+          typeId
+        },
+        include: {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },})
+      res.status(200).json({
+        message: "Succeed read data Lodgings",
+        data: lodgings
+      });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
   static async create(req, res, next) {
     try {
-      const { id } = req.logInfo;
-
-      const { name, facility, roomCapacity, imgUrl, location, price, typeId } =
+      const { name, facility, roomCapacity, imgUrl, location, price, typeId, authorId } =
         req.body;
 
       const lodging = await Lodging.create({
@@ -59,16 +132,17 @@ class LodgingController {
         location,
         price,
         typeId,
-        authorId: id,
+        authorId
       });
 
       delete lodging.dataValues.createdAt;
       delete lodging.dataValues.updatedAt;
       res.status(201).json({
-        massage: "Succeed create data lodging",
-        lodging: lodging,
+        message: "Succeed create data lodging",
+        data: lodging,
       });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -87,7 +161,7 @@ class LodgingController {
       }
 
       res.status(200).json({
-        massage: "Succeed read detail lodging",
+        message: "Succeed read detail lodging",
         data: lodging,
       });
     } catch (error) {
@@ -131,7 +205,7 @@ class LodgingController {
       });
 
       res.status(200).json({
-        massage: "Succeed update data lodging",
+        message: "Succeed update data lodging",
         data: lodging,
       });
     } catch (error) {
@@ -155,7 +229,7 @@ class LodgingController {
       await lodging.destroy();
 
       res.status(200).json({
-        massage: `${lodging.name} succeed to delete`,
+        message: `${lodging.name} succeed to delete`,
         data: lodging,
       });
     } catch (error) {
@@ -183,7 +257,7 @@ class LodgingController {
       });
 
       res.status(200).json({
-        massage: `Image ${lodging.name} success to update`,
+        message: `Image ${lodging.name} success to update`,
       });
     } catch (error) {
       next(error);
