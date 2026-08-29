@@ -6,7 +6,7 @@ const upload = require("../utils/multer");
 class LodgingController {
   static async read(req, res, next) {
     try {
-      const lodgings = await Lodging.findAlll({
+      const lodgings = await Lodging.findAll({
         include: {
           model: User,
           attributes: {
@@ -21,13 +21,14 @@ class LodgingController {
         data: lodgings
       });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
 
   static async readPub(req, res, next) {
     try {
-      const { search, sort, page } = req.query;
+      const { search, sort, filter, page } = req.query;
 
       const option = {
         include: {
@@ -47,6 +48,18 @@ class LodgingController {
             [Op.iLike]: `%${search}%`,
           },
         };
+      }
+
+      let type_id;
+      if (filter) {
+        if (filter === "Campur") {
+          type_id = 1;
+        } else if (filter === "Putri") {
+          type_id = 2
+        } else if (filter === "Putra") {
+          type_id = 3
+        }
+        option.where = {typeId: type_id}
       }
 
       if (sort) {
@@ -82,43 +95,7 @@ class LodgingController {
       next(error);
     }
   }
-
-  static async readPubByType(req, res, next) {
-    try {
-      const {type} = req.params;
-
-      let typeId;
-      if (type === "Campur") {
-        typeId = 1
-      } else if (type === "Putri") {
-        typeId = 2
-      } else if (type === "Putra") {
-        typeId = 3
-      }
-
-      const lodgings = await Lodging.findAll({
-        where: {
-          typeId
-        },
-        include: {
-          model: User,
-          attributes: {
-            exclude: ["createdAt", "updatedAt", "password"],
-          },
-        },
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },})
-      res.status(200).json({
-        message: "Succeed read data Lodgings",
-        data: lodgings
-      });
-    } catch (error) {
-      console.log(error);
-      next(error);
-    }
-  }
-
+  
   static async create(req, res, next) {
     try {
       const { name, facility, roomCapacity, imgUrl, location, price, typeId, authorId } =

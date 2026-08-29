@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const lodgingRouter = require("./lodging");
 const typeRouter = require("./type");
-const { Lodging } = require("../models");
 const AuthController = require("../controllers/authController");
 const LodgingController = require("../controllers/lodgingController");
 const TypeController = require("../controllers/typeController");
@@ -14,7 +13,6 @@ router.post("/", async (req, res, next) => {
 });
 
 router.get("/pub/lodgings", LodgingController.readPub);
-router.get("/pub/lodgings/:type", LodgingController.readPubByType);
 router.get("/pub/lodgings/:id", LodgingController.read);
 router.get("/pub/types", TypeController.read);
 
