@@ -9,7 +9,6 @@ const authorization = async (req, res, next) => {
 
       const { id } = req.params;
       const lodging = await Lodging.findByPk(id);
-      console.log(lodging);
 
       if (!lodging) throw { name: "NotFound" };
 

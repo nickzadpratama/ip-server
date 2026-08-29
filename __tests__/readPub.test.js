@@ -63,10 +63,10 @@ describe("GET /pub/lodgings", () => {
     });
   });
 
-  describe("GET /pub/lodgings/:type - success", () => {
+  describe("GET /pub/lodgings - success", () => {
     test("it should be return an object with property of message and data", async () => {
     const response = await request(app)
-        .get("/pub/lodgings/Campur")
+        .get("/pub/lodgings?filter=Campur")
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty(
@@ -79,11 +79,9 @@ describe("GET /pub/lodgings", () => {
 
   describe("GET /pub/lodgings - success", () => {
     test("it should be return an object with property of message and data", async () => {
-      const page = {size: 5, number: 1}
+      const page = {size: 10, number: 1}
     const response = await request(app)
         .get(`/pub/lodgings?page[size]=${page.size}&page[number]=${page.number}`);
-
-        // console.log(response);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty(
@@ -92,7 +90,7 @@ describe("GET /pub/lodgings", () => {
     );
     expect(response.body).toHaveProperty("data", expect.any(Object));
     expect(response.body).toHaveProperty("page", "1");
-    expect(response.body).toHaveProperty("dataPerPage", "5");
+    expect(response.body).toHaveProperty("dataPerPage", "10");
 
     });
   });

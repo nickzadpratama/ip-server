@@ -52,48 +52,27 @@ describe("GET /pub/lodgings/:id", () => {
   describe("GET /pub/lodgings/:id - success", () => {
     test("it should be return an object with property of message and data", async () => {
       const response = await request(app)
-        .get("/pub/lodgings/:id")
+        .get("/pub/lodgings/1")
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(
         "message",
-        "Succeed read data Lodgings",
+        "Succeed read detail lodging",
       );
       expect(response.body).toHaveProperty("data", expect.any(Object));
     });
   });
 
-  describe("GET /pub/lodgings/:type - success", () => {
-    test("it should be return an object with property of message and data", async () => {
-    const response = await request(app)
-        .get("/pub/lodgings/Campur")
+  describe("GET /pub/lodgings/:id - failed", () => {
+    test("it should be return an object with property of error message", async () => {
+      const response = await request(app)
+        .get("/pub/lodgings/21")
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty(
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty(
         "message",
-        "Succeed read data Lodgings",
-    );
-    expect(response.body).toHaveProperty("data", expect.any(Object));
-    });
-  });
-
-  describe("GET /pub/lodgings - success", () => {
-    test("it should be return an object with property of message and data", async () => {
-      const page = {size: 5, number: 1}
-    const response = await request(app)
-        .get(`/pub/lodgings?page[size]=${page.size}&page[number]=${page.number}`);
-
-        // console.log(response);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty(
-        "message",
-        "Succeed read data Lodgings",
-    );
-    expect(response.body).toHaveProperty("data", expect.any(Object));
-    expect(response.body).toHaveProperty("page", "1");
-    expect(response.body).toHaveProperty("dataPerPage", "5");
-
+        "Data not found",
+      );
     });
   });
 })

@@ -4,7 +4,6 @@ const { sequelize } = require("../models");
 const app = require("../app");
 
 beforeAll(async () => {
-  // seeding user
   const users = require("../data/users.json");
   users.forEach((el) => {
     el.password = hashPassword(el.password);

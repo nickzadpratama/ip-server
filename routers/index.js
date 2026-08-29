@@ -13,7 +13,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.get("/pub/lodgings", LodgingController.readPub);
-router.get("/pub/lodgings/:id", LodgingController.read);
+router.get("/pub/lodgings/:id", LodgingController.lodgingById);
 router.get("/pub/types", TypeController.read);
 
 router.post("/login", AuthController.login);

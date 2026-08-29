@@ -79,11 +79,12 @@ describe("PUT /lodgings/:id", () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("message", "Succeed update data lodging");
+        expect(response.body).toHaveProperty("data", expect.any(Object));
     });
   });
   
   describe("PUT /lodgings/:id - failed", () => {
-    test("it should be return an object with property of message and data", async () => {
+    test("it should be return an object with property of error message", async () => {
       // mengupdate facility dan price
       const body = {
         name: "Rauda Kost Eksklusif Jogja",
@@ -107,7 +108,7 @@ describe("PUT /lodgings/:id", () => {
   });
 
   describe("PUT /lodgings/:id - failed", () => {
-    test("it should be return an object with property of message and data", async () => {
+    test("it should be return an object with property of error message", async () => {
       // mengupdate facility dan price
       const body = {
         name: "Rauda Kost Eksklusif Jogja",
@@ -134,7 +135,7 @@ describe("PUT /lodgings/:id", () => {
   });
 
   describe("PUT /lodgings/:id - failed", () => {
-    test("it should be return an object with property of message and data", async () => {
+    test("it should be return an object with property of error message", async () => {
       // mengupdate facility, price dan image
       const body = {
         name: "Rauda Kost Eksklusif Jogja",
@@ -158,7 +159,7 @@ describe("PUT /lodgings/:id", () => {
   });
 
   describe("PUT /lodgings/:id - failed", () => {
-    test("it should be return an object with property of message and data", async () => {
+    test("it should be return an object with property of error message", async () => {
       // mengupdate facility dan price
       const body = {
         name: "",
@@ -182,7 +183,7 @@ describe("PUT /lodgings/:id", () => {
   });
 
   describe("PUT /lodgings/:id - failed", () => {
-    test("it should be return an object with property of message and data", async () => {
+    test("it should be return an object with property of error message", async () => {
       access_token = signToken({
         id: 3,
         email: "nickz@gmail.com",
