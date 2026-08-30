@@ -3,6 +3,60 @@
 - Tema Aplikasi: Rent Room
 
 Struktur Folder: 
+hck-99-GC01-nickzadpratama
+├── __tests__
+├── .github
+├── bin
+│   └── www.js
+├── config
+│   └── config.json
+├── controllers
+│   ├── authController.js
+│   ├── lodgingController.js
+│   └── typeController.js
+├── data
+│   ├── lodgings.json
+│   ├── types.json
+│   └── users.json
+├── helpers
+│   ├── bcrypt.js
+│   └── jwt.js
+├── middlewares
+│   ├── authentication.js
+│   ├── authorization.js
+│   └── errorHandler.js
+├── migrations
+│   ├── 20260826074705-create-user.js
+│   ├── 20260826074854-create-type.js
+│   └── 20260826075213-create-lodging.js
+├── models
+│   ├── index.js
+│   ├── lodging.js
+│   ├── type.js
+│   └── user.js
+├── node_modules
+└── routers
+    ├── index.js
+    ├── lodging.js
+    └── type.js
+├── seeders/
+│   ├── 20260826094846-seed-Users.js
+│   ├── 20260826094859-seed-Types.js
+│   └── 20260826094910-seed-Lodgings.js
+├── utils/
+│   └── multer.js
+├── .env
+├── .gitignore
+├── app.js
+├── env-template.txt
+├── mami_kos.postman_collection.json
+├── NOTES.md
+├── package-lock.json
+├── package.json
+├── README.md
+├── TODO.md
+├── hck-99-SLC01-nickzadpratama/
+└── hck-99-GC01-nickzadpratama.zip
 
 - server (PORT: 3000)
 
