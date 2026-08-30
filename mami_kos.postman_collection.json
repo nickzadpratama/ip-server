@@ -1,0 +1,448 @@
+{
+  "info": {
+    "_postman_id": "fb5d3688-74ff-419e-a2f3-2f13be9c59ff",
+    "name": "mami_kos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47199535",
+    "_collection_link": "https://go.postman.co/collection/47199535-fb5d3688-74ff-419e-a2f3-2f13be9c59ff?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Landing Page",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"\",\n    \"facility\": \"Standart\",\n    \"roomCapacity\": 3,\n    \"imgUrl\": \"http://arah.in/memes-1\",\n    \"location\": \"Jakarta\",\n    \"price\": 1000000,\n    \"typeId\": 1,\n    \"authorId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"nickz\",\n    \"email\": \"nick@gmail2346.com\",\n    \"password\": \"123qwerty\",\n    \"role\": \"staff\",\n    \"phoneNumber\": \"021123456\",\n    \"address\": \"Jakarta\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/add-user",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "add-user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "nick@gmail.com",
+              "type": "text",
+              "uuid": "c53c19d7-1e53-4003-9eb8-2364654f4545"
+            },
+            {
+              "key": "password",
+              "value": "12abcd",
+              "type": "text",
+              "uuid": "a5525289-fb3d-4369-967d-e114630df5a5"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{url}}/login",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read Lodgings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/lodgings",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read By Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/lodgings/1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Lodging",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"name\": \"Urban\",\n\"facility\": \"AC, WiFi, TV, Kamar Mandi Dalam, Water Heater, Kasur Queen, Kulkas Bersama, Security 24 Jam\",\n\"roomCapacity\": 1,\n\"imgUrl\": \"https://images.mamikos.com/uploads/cache/data/user/2026-01/urban-living.jpg\",\n\"location\": \"Medan Baru, Medan\",\n\"price\": 2100000,\n\"typeId\": 1,\n\"authorId\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/lodgings",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"satu\",\n    \"facility\": \"Standart\",\n    \"roomCapacity\": 3,\n    \"imgUrl\": \"http://arah.in/memes-1\",\n    \"location\": \"Jakarta\",\n    \"price\": 1000000,\n    \"typeId\": 2,\n    \"authorId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/lodgings/1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Image",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "image",
+              "type": "file",
+              "uuid": "7d677669-1c00-472d-b9b2-4261768108e4",
+              "src": "/home/nickzad/Pictures/Screenshots/Screenshot From 2026-08-19 21-22-29.png"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{url}}/lodgings/2",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": null,\n    \"facility\": \"Standart\",\n    \"roomCapacity\": 3,\n    \"imgUrl\": \"http://arah.in/memes-1\",\n    \"location\": \"Jakarta\",\n    \"price\": 1000000,\n    \"typeId\": 1,\n    \"authorId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{url}}/lodgings/9",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "lodgings",
+            "9"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read Types",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/types",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Type",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Standart\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/types",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Type",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Elit",
+              "type": "text",
+              "uuid": "78229885-6ee0-4110-9b54-1b0658ae2707"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{url}}/types/3",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "types",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read Lodgings Pub",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true,
+        "followRedirects": true,
+        "disableUrlEncoding": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/pub/lodgings?page[size]=5&page[number]=1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "pub",
+            "lodgings"
+          ],
+          "query": [
+            {
+              "key": "page[size]",
+              "value": "5"
+            },
+            {
+              "key": "page[number]",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read By Id pub",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/pub/lodgings/1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "pub",
+            "lodgings",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read Types pub",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/pub/types",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "pub",
+            "types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter Lodging Pub",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/pub/lodgings?filter=Putri",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "pub",
+            "lodgings"
+          ],
+          "query": [
+            {
+              "key": "filter",
+              "value": "Putri"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

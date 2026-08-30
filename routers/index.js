@@ -8,7 +8,7 @@ const TypeController = require("../controllers/typeController");
 const authentication = require("../middlewares/authentication");
 const authorization = require("../middlewares/authorization");
 
-router.post("/", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   res.send("This is Mami kos Server");
 });
 
