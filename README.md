@@ -4,17 +4,17 @@
 
 Tema: Rent Room (Mami Kos)
 
-Mami Kos Server
+# Mami Kos Server
 Mami Kos is an application to share and manage Mami Kos 
 boarding house. It performs standard CRUD actions based on RESTful concept.
 
-This app has :
+## This app has :
 
 RESTful endpoint for asset's CRUD operation
 JSON formatted response
  
 
-Tech Stack used to build this app :
+## Tech Stack used to build this app :
 
 Node JS
 Express JS framework
@@ -23,52 +23,77 @@ PostgreSQL
 Base URL: https://localhost:3000
 Format Data: JSON
 
-Global Responses
+## Global Responses
 These responses are applied globally on all endpoints
 
-Response (400 - SequelizeValidationError or SequelizeUniqueConstraintError)
+_Response (400 - SequelizeValidationError or SequelizeUniqueConstraintError)_
+
+```json
 {
   "message": validation error message
 }
+```
 
-Response (400 - SequelizeDatabaseError or SequelizeForeignKeyConstraintError)
+
+_Response (400 - SequelizeDatabaseError or SequelizeForeignKeyConstraintError)_
+
+```json
 {
   "message": "Invalid input"
 }
+```
 
-Response (401 - InvalidLogin)
+_Response (401 - InvalidLogin)_
+
+```json
 {
   "message": "Please input email or password"
 }
+```
 
-Response (401 - LoginError)
+_Response (401 - LoginError)_
+
+```json
 {
   "message": "Invalid email or password"
 }
+```
 
-Response (401 - Unauthorized or JsonWebTokenError)
+_Response (401 - Unauthorized or JsonWebTokenError)_
+
+```json
 {
   "message": "Please login first"
 }
+```
 
-Response (403 - Forbidden)
+_Response (403 - Forbidden)_
+
+```json
 {
   "message": "You don't have any access"
 }
+```
 
-Response (404 - NotFound)
+_Response (404 - NotFound)_
+
+```json
 {
   "message": "Data not found"
 }
+```
 
-Response (500 - ServerError)
+_Response (500 - ServerError)_
+
+```json
 {
   "message": "Internal server error"
 }
+```
 
-RESTful endpoints
+# RESTful endpoints
 
-GET /
+## GET /
 Landing Page
 
 Request Header
@@ -77,16 +102,18 @@ not needed
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
 This is Mami kos Server
 
-POST /pub/register
+## POST /pub/register
 Create new user
 
 Request Header
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "message": "Create new User",
     "data": {
@@ -100,8 +127,11 @@ Response (200)
         "createdAt": "2026-08-29T16:05:03.345Z"
     }
 }
+```
 
 Request Body
+
+```json
 {
     "username": "<user username>",
     "email": "<user email>",
@@ -111,34 +141,43 @@ Request Body
     "updatedAt": "2026-08-29T16:05:03.345Z",
     "createdAt": "2026-08-29T16:05:03.345Z"
 }
+```
 
-POST /login
+## POST /login
 Login into server
 
 Request Header
 not needed
 
 Request Body
+
+```json
 {
     "email": "<email to get insert into>",
     "password": "<password to get insert into>",
 }
+```
 
-Response (200)
+_Response (200)_
 access_token
 
-GET /lodgings
+## GET /lodgings
 Create new user
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
 not needed
 
 Response (200)
+
+```json
 {
     "message": "Succeed read data Lodging",
     "data": [
@@ -183,19 +222,25 @@ Response (200)
         ...
     ]
 }
+```
 
-GET /lodgings/:id
+## GET /lodgings/:id
 Get single lodging as defined by the id provided
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
 not needed
 
 Response (200)
+
+```json
 {
     "message": "Succeed read data Lodging",
     "data": {
@@ -218,16 +263,22 @@ Response (200)
         }
     }
 }
+```
 
-POST /lodgings
+## POST /lodgings
 Create new lodging
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
+
+```json
 {
     "name": "<name to get insert into>",
     "facility": "<facility to get insert into>",
@@ -238,8 +289,11 @@ Request Body
     "typeId": "<typeId to get insert into>",
     "authorId": "<authorId to get insert into>"
 }
+```
 
-Response (201)
+_Response (201)_
+
+```json
 {
     "message": "Succeed create data lodging",
     "data": {
@@ -254,16 +308,22 @@ Response (201)
         "authorId": "<lodging authorId>"
     }
 }
+```
 
-PUT /lodgings/:id
+## PUT /lodgings/:id
 Update a lodging defined by the id provided
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
+
+```json
 {
     "name": "<name to get insert into>",
     "facility": "<facility to get insert into>",
@@ -274,8 +334,11 @@ Request Body
     "typeId": "<typeId to get insert into>",
     "authorId": "<authorId to get insert into>"
 }
+```
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "message": "Succeed update data lodging",
     "data": {
@@ -290,37 +353,52 @@ Response (200)
         "authorId": "<lodging authorId>"
     }
 }
+```
 
-PATCH /lodgings/:id
+## PATCH /lodgings/:id
 Update an image lodging defined by the id provided
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
+
+```json
 {
     "imgUrl": "<imgUrl to get insert into>",
 }
+```
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "message": "Image <lodging name> success to update"
 }
+```
 
-DELETE /lodgings/:id
+## DELETE /lodgings/:id
 Delete a lodging defined by the id provided
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "message": "<lodging name> succeed to delete",
     "data": {
@@ -335,19 +413,25 @@ Response (200)
         "authorId": "<lodging authorId>"
     }
 }
+```
 
-GET /types
+## GET /types
 Get all types
 
 Request Header
+
+```json
 {
   "access_token": "<your access token>"
 }
+```
 
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "massage": "Succeed read data type",
     "data": [
@@ -362,21 +446,30 @@ Response (200)
         ...
     ]
 }
+```
 
-POST /types
+## POST /types
 Create types
 
 Request Header
+
+```json
 {
     "access_token": "<your access token>"
 }
+```
 
 Request Body
+
+```json
 {
     "name": "<name to get insert into>"
 }
+```
 
-Response (201)
+_Response (201)_
+
+```json
 {
     "massage": "Succeed read data type",
     "data": [
@@ -386,21 +479,30 @@ Response (201)
         }
     ]
 }
+```
 
-PUT /types
+## PUT /types
 Update a type defined by the id provided
 
 Request Header
+
+```json
 {
     "access_token": "<your access token>"
 }
+```
 
 Request Body
+
+```json
 {
     "name": "<name to get insert into>"
 }
+```
 
-Response (201)
+_Response (201)_
+
+```json
 {
     "massage": "Succeed update data type",
     "data": [
@@ -410,8 +512,9 @@ Response (201)
         }
     ]
 }
+```
 
-GET /pub/lodgings
+## GET /pub/lodgings
 Get all lodgings public
 
 Request Header
@@ -420,7 +523,9 @@ not needed
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "page": 1,
     "data": [
@@ -469,8 +574,9 @@ Response (200)
     "dataPerPage": 10,
     "message": "Succeed read data Lodgings"
 }
+```
 
-GET /pub/lodgings/:id
+## GET /pub/lodgings/:id
 Get single lodging as defined by the id provided
 
 Request Header
@@ -479,7 +585,9 @@ not needed
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "message": "Succeed read detail lodging",
     "data": 
@@ -495,8 +603,9 @@ Response (200)
             "authorId": "<lodging authorId>",
         },
 }
+```
 
-GET /pub/types
+## GET /pub/types
 Get all types public
 
 Request Header
@@ -505,7 +614,9 @@ not needed
 Request Body
 not needed
 
-Response (200)
+_Response (200)_
+
+```json
 {
     "massage": "Succeed read data type",
     "data": [
@@ -520,3 +631,4 @@ Response (200)
         ...
     ]
 }
+```
