@@ -549,7 +549,7 @@ _Response (200)_
             }
         },
         {
-            "id"id": <given id by system>,
+            "id": <given id by system>,
             "name": "<lodging name>",
             "facility": "<lodging facility>",
             "roomCapacity": "<lodging roomCapacity>",
