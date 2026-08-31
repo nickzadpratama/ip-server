@@ -9,7 +9,7 @@ const authentication = require("../middlewares/authentication");
 const authorization = require("../middlewares/authorization");
 
 router.get("/", async (req, res, next) => {
-  res.send("This is Mami kos Server");
+  res.send("This is Papi Kos Server");
 });
 
 router.get("/pub/lodgings", LodgingController.readPub);
