@@ -9,7 +9,7 @@ class TypeController {
         },
       });
       res.status(200).json({
-        massage: "Succeed read data type",
+        message: "Succeed read data type",
         data: types,
       });
     } catch (error) {
@@ -28,7 +28,7 @@ class TypeController {
       delete type.dataValues.createdAt;
       delete type.dataValues.updatedAt;
       res.status(201).json({
-        massage: "Succeed create data type",
+        message: "Succeed create data type",
         data: type,
       });
     } catch (error) {
@@ -56,7 +56,7 @@ class TypeController {
       });
 
       res.status(200).json({
-        massage: "Succeed update data type",
+        message: "Succeed update data type",
         data: type,
       });
     } catch (error) {
