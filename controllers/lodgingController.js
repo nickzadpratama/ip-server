@@ -15,10 +15,11 @@ class LodgingController {
         },
         attributes: {
           exclude: ["createdAt", "updatedAt"],
-        },})
+        },
+      });
       res.status(200).json({
         message: "Succeed read data Lodging",
-        data: lodgings
+        data: lodgings,
       });
     } catch (error) {
       next(error);
@@ -54,11 +55,11 @@ class LodgingController {
         if (filter === "Campur") {
           type_id = 1;
         } else if (filter === "Putri") {
-          type_id = 2
+          type_id = 2;
         } else if (filter === "Putra") {
-          type_id = 3
+          type_id = 3;
         }
-        option.where = {typeId: type_id}
+        option.where = { typeId: type_id };
       }
 
       if (sort) {
@@ -72,16 +73,16 @@ class LodgingController {
       let pageNumber = 1;
       if (page) {
         if (page.size) {
-          limit = page.size
-          option.limit = limit
+          limit = page.size;
+          option.limit = limit;
         }
         if (page.number) {
           pageNumber = page.number;
-          option.offset = limit * (pageNumber - 1)
+          option.offset = limit * (pageNumber - 1);
         }
       }
 
-      const { count, rows } = await Lodging.findAndCountAll(option)
+      const { count, rows } = await Lodging.findAndCountAll(option);
       res.status(200).json({
         page: pageNumber,
         data: rows,
@@ -94,10 +95,11 @@ class LodgingController {
       next(error);
     }
   }
-  
+
   static async create(req, res, next) {
     try {
-      const { name, facility, roomCapacity, imgUrl, location, price, typeId, authorId } =
+      const { userId } = req.loginInfo;
+      const { name, facility, roomCapacity, imgUrl, location, price, typeId } =
         req.body;
 
       const lodging = await Lodging.create({
@@ -108,7 +110,7 @@ class LodgingController {
         location,
         price,
         typeId,
-        authorId
+        authorId: userId,
       });
 
       delete lodging.dataValues.createdAt;
