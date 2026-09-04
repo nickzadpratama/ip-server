@@ -17,6 +17,23 @@ class TypeController {
     }
   }
 
+  static async readById(req, res, next) {
+    try {
+      const { id } = req.params;
+      const type = await Type.findByPk(id, {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+      res.status(200).json({
+        message: "Succeed read data type",
+        data: type,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async create(req, res, next) {
     try {
       const { name } = req.body;
