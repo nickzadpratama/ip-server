@@ -148,6 +148,7 @@ class LodgingController {
 
   static async update(req, res, next) {
     try {
+      const { userId } = req.loginInfo;
       const { id } = req.params;
       const lodging = await Lodging.findByPk(id, {
         attributes: {
@@ -159,16 +160,8 @@ class LodgingController {
         throw { name: "NotFound" };
       }
 
-      const {
-        name,
-        facility,
-        roomCapacity,
-        imgUrl,
-        location,
-        price,
-        typeId,
-        authorId,
-      } = req.body;
+      const { name, facility, roomCapacity, imgUrl, location, price, typeId } =
+        req.body;
 
       await lodging.update({
         name,
@@ -178,7 +171,7 @@ class LodgingController {
         location,
         price,
         typeId,
-        authorId,
+        authorId: userId,
       });
 
       res.status(200).json({
