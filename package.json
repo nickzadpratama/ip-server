@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/H8-FSJS-P2S5/hck-99-GC01-nickzadpratama#readme",
   "dependencies": {
+    "@google/genai": "^2.21.0",
     "@imagekit/nodejs": "^7.11.0",
     "axios": "^1.20.0",
     "bcryptjs": "^3.0.3",
@@ -28,6 +29,7 @@
     "express": "^5.2.1",
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
+    "google-auth-library": "^11.0.2",
     "multer": "^2.2.0",
     "pg": "^8.23.0",
     "sequelize": "^6.37.8"
