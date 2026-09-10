@@ -5,13 +5,11 @@ const { User } = require("../models");
 class AuthController {
   static async register(req, res, next) {
     try {
-      const { username, email, password, phoneNumber, address } = req.body;
+      const { username, email, password } = req.body;
       const user = await User.create({
         username,
         email,
         password: hashPassword(password),
-        phoneNumber,
-        address,
       });
 
       delete user.dataValues.password;
@@ -20,6 +18,7 @@ class AuthController {
         data: user,
       });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -47,7 +46,6 @@ class AuthController {
       const payload = {
         id: user.id,
         email: user.email,
-        role: user.role,
       };
 
       const access_token = signToken(payload);
@@ -56,6 +54,7 @@ class AuthController {
         access_token,
       });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }

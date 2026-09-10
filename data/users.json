@@ -2,25 +2,11 @@
   {
     "username": "nick",
     "email": "nick@gmail.com",
-    "password": "12abcd",
-    "role": "admin",
-    "phoneNumber": "021123456",
-    "address": "Jakarta"
+    "password": "12abcd"
   },
   {
     "username": "melll",
     "email": "melati@gmail.com",
-    "password": "321rewqt",
-    "role": "admin",
-    "phoneNumber": "021123444",
-    "address": "Yogyakarta"
-  },
-  {
-    "username": "nickz",
-    "email": "nickz@gmail.com",
-    "password": "12345",
-    "role": "staff",
-    "phoneNumber": "021123433",
-    "address": "Depok"
+    "password": "321rewqt"
   }
 ]

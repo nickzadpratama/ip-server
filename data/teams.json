@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Arema FC",
+    "code": "AR",
+    "logo": "https://media.api-sports.io/football/teams/33.png",
+    "founded": 1998,
+    "stadium": "old",
+    "city": "Ind",
+    "capacity": 20000,
+    "image": "https://media.api-sports.io/football/venues/556.png",
+    "UserId": 1
+  },
+  {
+    "name": "Arema FC2",
+    "code": "AR2",
+    "logo": "https://media.api-sports.io/football/teams/33.png",
+    "founded": 1990,
+    "stadium": "old-",
+    "city": "Indo",
+    "capacity": 20000,
+    "image": "https://media.api-sports.io/football/venues/556.png",
+    "UserId": 1
+  }
+]

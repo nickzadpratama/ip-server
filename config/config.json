@@ -2,14 +2,14 @@
   "development": {
     "username": "postgres",
     "password": "postgres",
-    "database": "mami_kos",
+    "database": "Football_Api",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
     "password": "postgres",
-    "database": "mami_kos_test",
+    "database": "Football_Api_test",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },

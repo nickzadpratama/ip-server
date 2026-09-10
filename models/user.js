@@ -2,31 +2,39 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      User.hasMany(models.Lodging, { foreignKey: "authorId" });
+      User.hasMany(models.Team);
     }
   }
   User.init(
     {
-      username: DataTypes.STRING,
-      email: {
+      username: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
         validate: {
           notNull: {
-            msg: "Email required",
+            msg: "Username Required",
           },
           notEmpty: {
-            msg: "Email required",
+            msg: "Username Required",
+          },
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: {
+          msg: "Email must be unique",
+        },
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "Email Required",
+          },
+          notEmpty: {
+            msg: "Email Required",
           },
           isEmail: {
-            msg: "Must in email format",
+            msg: "Invalid email format",
           },
         },
       },
@@ -35,20 +43,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notNull: {
-            msg: "Password required",
+            msg: "Password Required",
           },
           notEmpty: {
-            msg: "Password required",
+            msg: "Password Required",
           },
-          min: 5,
         },
       },
-      role: {
-        type: DataTypes.STRING,
-        defaultValue: "staff",
-      },
-      phoneNumber: DataTypes.STRING,
-      address: DataTypes.STRING,
     },
     {
       sequelize,

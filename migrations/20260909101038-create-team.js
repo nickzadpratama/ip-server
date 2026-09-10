@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Lodgings", {
+    await queryInterface.createTable("Teams", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,39 +13,34 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      facility: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      roomCapacity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      imgUrl: {
+      code: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      location: {
+      logo: {
+        type: Sequelize.STRING,
+      },
+      founded: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      stadium: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      price: {
+      city: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      capacity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      typeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Types",
-          key: "id",
-        },
-        onUpdate: "cascade",
-        onDelete: "cascade",
+      image: {
+        type: Sequelize.STRING,
       },
-      authorId: {
+      UserId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
           model: "Users",
           key: "id",
@@ -64,6 +59,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Lodgings");
+    await queryInterface.dropTable("Teams");
   },
 };

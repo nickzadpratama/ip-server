@@ -1,29 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const lodgingRouter = require("./lodging");
-const typeRouter = require("./type");
+const teamRouter = require("./team");
 const AuthController = require("../controllers/authController");
-const LodgingController = require("../controllers/lodgingController");
-const TypeController = require("../controllers/typeController");
+const TeamController = require("../controllers/teamController");
 const authentication = require("../middlewares/authentication");
-const authorization = require("../middlewares/authorization");
+// const authorization = require("../middlewares/authorization");
 
-router.get("/", async (req, res, next) => {
-  res.send("This is Papi Kos Server");
-});
-
-router.get("/pub/lodgings", LodgingController.readPub);
-router.get("/pub/lodgings/:id", LodgingController.lodgingById);
-router.get("/pub/types", TypeController.read);
-router.get("/pub/types/:id", TypeController.readById);
-
+router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
 
 router.use(authentication);
 
-router.post("/add-user", authorization, AuthController.register);
-
-router.use("/lodgings", lodgingRouter);
-router.use("/types", typeRouter);
+router.use("/", teamRouter);
 
 module.exports = router;
