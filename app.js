@@ -8,21 +8,24 @@ const errorHandler = require("./middlewares/errorHandler");
 const app = express();
 const { GoogleGenAI } = require("@google/genai");
 
+app.use(cors());
+
+app.use(express.json());
+const ai = new GoogleGenAI({
+  apiKey: "AQ.Ab8RN6IXG7F0lhnYqOqHf33ZkUMYgJKouZuy0C0gbhTx4pNN3A",
+});
+console.log(ai);
 app.get("/genAI", async (req, res, next) => {
   try {
-    const { inputAI } = req.body;
-    const id = new GoogleGenAI({
-      apikey: "AQ.Ab8RN6KxQ8TMcABTnQ9mgKJZmc4ReIixJvisazzC5mIuVZkQww",
+    const interaction = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `Siapa pelatih Timnas Indonesia saat ini dan bagaimana performa mereka di kualifikasi Piala Dunia?`,
+      // input: `${inputAI}, jawab hanya seputar sepak bola Indonesia`,
     });
+    console.log(interaction);
+    const result = interaction.text;
 
-    const interaction = await axios.interaction.create({
-      model: "gemini-3.7-flash",
-      input: `${inputAI}, jawab hanya seputar sepak bola Indonesia`,
-    });
-
-    const result = interaction.output_text;
-
-    res.status(200).json({ result });
+    res.status(200).json(result);
   } catch (error) {
     console.log(error);
     next(error);
@@ -30,8 +33,7 @@ app.get("/genAI", async (req, res, next) => {
 });
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
+
 app.set("query parser", "extended");
 
 app.use("/", router);
