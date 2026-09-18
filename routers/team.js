@@ -2,7 +2,6 @@ const express = require("express");
 const TeamController = require("../controllers/teamController");
 const authorization = require("../middlewares/authorization");
 const router = express.Router();
-const upload = require("../utils/multer");
 
 router.get("/", TeamController.read);
 
