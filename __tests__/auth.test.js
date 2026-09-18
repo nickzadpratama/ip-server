@@ -6,6 +6,16 @@
 const request = require("supertest");
 const app = require("../app");
 const { User, sequelize } = require("../models");
+const { verifyToken } = require("../helpers/jwt");
+const { comparePassword } = require("../helpers/bcrypt");
+
+// Mock google-auth-library supaya POST /google-login bisa diuji tanpa token Google asli
+jest.mock("google-auth-library", () => ({
+  OAuth2Client: jest.fn(() => ({ verifyIdToken: mockVerifyIdToken })),
+  mockVerifyIdToken: jest.fn(),
+}));
+
+const { mockVerifyIdToken } = require("google-auth-library");
 
 const testUser = {
   username: "testuser",
@@ -128,6 +138,78 @@ describe("AuthController E2E Tests", () => {
         .send({ email: testUser.email, password: "wrongpass" });
       expect(res.status).toBe(401);
       expect(res.body.message).toBe("Invalid email or password");
+    });
+  });
+
+  describe("POST /google-login", () => {
+    const googleEmail = "google.user@example.com";
+
+    beforeEach(async () => {
+      mockVerifyIdToken.mockReset();
+      try {
+        await User.destroy({ where: {} });
+      } catch (error) {
+        console.error("Error in beforeEach:", error);
+      }
+    });
+
+    it("should login with a valid Google id token and create the user", async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({ email: googleEmail, name: "Google User" }),
+      });
+
+      const res = await request(app)
+        .post("/google-login")
+        .set("token", "valid-google-id-token");
+
+      expect(res.status).toBe(200);
+      expect(typeof res.body.access_token).toBe("string");
+
+      const decoded = verifyToken(res.body.access_token);
+      expect(decoded.email).toBe(googleEmail);
+
+      const user = await User.findOne({ where: { email: googleEmail } });
+      expect(user).not.toBeNull();
+      expect(user.username).toBe("Google User");
+      expect(comparePassword("login_with_google", user.password)).toBe(true);
+    });
+
+    it("should login with an existing Google user (no duplicate)", async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({ email: googleEmail, name: "Google User" }),
+      });
+
+      await request(app)
+        .post("/google-login")
+        .set("token", "valid-google-id-token");
+
+      const res = await request(app)
+        .post("/google-login")
+        .set("token", "valid-google-id-token");
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("access_token");
+
+      const count = await User.count({ where: { email: googleEmail } });
+      expect(count).toBe(1);
+    });
+
+    it("should fail with 401 when token header is missing", async () => {
+      const res = await request(app).post("/google-login");
+
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe("Invalid email or password");
+    });
+
+    it("should fail with 500 when Google token verification fails", async () => {
+      mockVerifyIdToken.mockRejectedValue(new Error("Invalid Google token"));
+
+      const res = await request(app)
+        .post("/google-login")
+        .set("token", "bad-token");
+
+      expect(res.status).toBe(500);
+      expect(res.body.message).toBe("Internal server error");
     });
   });
 

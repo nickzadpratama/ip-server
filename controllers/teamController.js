@@ -39,15 +39,18 @@ class TeamController {
   static async create(req, res, next) {
     try {
       const { userId } = req.loginInfo;
-      const { name, code, founded, stadium, city, capacity } = req.body;
+      const { name, code, logo, founded, stadium, city, capacity, image } =
+        req.body;
 
       const team = await Team.create({
         name,
         code,
+        logo,
         founded,
         stadium,
         city,
         capacity,
+        image,
         UserId: userId,
       });
 
