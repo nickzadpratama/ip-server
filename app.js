@@ -30,7 +30,7 @@ app.get("/genAI", async (req, res, next) => {
     });
     console.log(interaction);
     const result =
-      interaction.text || "Maaf, saya tidak bisa menjawab saat ini.";
+      interaction.text || "Maaf, saya tidak bisa menjawab saat ini";
 
     res.status(200).json(result);
   } catch (error) {
