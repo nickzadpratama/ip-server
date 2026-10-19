@@ -4,6 +4,12 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasMany(models.Team);
+      User.hasMany(models.FanClubMembership, { foreignKey: "UserId", onDelete: "CASCADE" });
+      User.belongsToMany(models.FanClub, {
+        through: models.FanClubMembership,
+        foreignKey: "UserId",
+        otherKey: "FanClubId",
+      });
     }
   }
   User.init(

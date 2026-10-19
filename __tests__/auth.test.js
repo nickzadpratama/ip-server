@@ -1,15 +1,10 @@
-/**
- * E2E Tests for AuthController
- * Testing authentication endpoints: POST /register, POST /login
- */
-
 const request = require("supertest");
 const app = require("../app");
 const { User, sequelize } = require("../models");
 const { verifyToken } = require("../helpers/jwt");
 const { comparePassword } = require("../helpers/bcrypt");
+const axios = require("axios");
 
-// Mock google-auth-library supaya POST /google-login bisa diuji tanpa token Google asli
 jest.mock("google-auth-library", () => ({
   OAuth2Client: jest.fn(() => ({ verifyIdToken: mockVerifyIdToken })),
   mockVerifyIdToken: jest.fn(),
@@ -33,9 +28,13 @@ describe("AuthController E2E Tests", () => {
     await sequelize.close();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(async () => {
     try {
-      // Use delete instead of truncate to avoid foreign key issues
+
       await User.destroy({ where: {} });
     } catch (error) {
       console.error("Error in beforeEach:", error);
@@ -210,6 +209,79 @@ describe("AuthController E2E Tests", () => {
 
       expect(res.status).toBe(500);
       expect(res.body.message).toBe("Internal server error");
+    });
+  });
+
+  describe("POST /facebook-login", () => {
+    const facebookToken = "valid-facebook-access-token";
+
+    it("should verify the Facebook token and create the user", async () => {
+      jest.spyOn(axios, "get").mockResolvedValue({
+        data: {
+          id: "facebook-user-id",
+          name: "Facebook User",
+          email: "facebook.user@example.com",
+        },
+      });
+
+      const res = await request(app)
+        .post("/facebook-login")
+        .set("token", facebookToken);
+
+      expect(res.status).toBe(200);
+      expect(typeof res.body.access_token).toBe("string");
+      expect(axios.get).toHaveBeenCalledWith(
+        "https://graph.facebook.com/me",
+        expect.objectContaining({
+          params: expect.objectContaining({ access_token: facebookToken }),
+        }),
+      );
+
+      const user = await User.findOne({
+        where: { email: "facebook.user@example.com" },
+      });
+      expect(user.username).toBe("Facebook User");
+      expect(comparePassword("login_with_facebook", user.password)).toBe(false);
+      expect(verifyToken(res.body.access_token).email).toBe(
+        "facebook.user@example.com",
+      );
+    });
+
+    it("should reject a request with no Facebook token", async () => {
+      const res = await request(app).post("/facebook-login");
+
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe("Invalid email or password");
+    });
+
+    it("should explain when Facebook does not return an email", async () => {
+      jest.spyOn(axios, "get").mockResolvedValue({
+        data: { id: "facebook-user-id", name: "Facebook User" },
+      });
+
+      const res = await request(app)
+        .post("/facebook-login")
+        .set("token", facebookToken);
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain("email address");
+    });
+
+    it("should return an authentication error when Facebook rejects the token", async () => {
+      jest
+        .spyOn(axios, "get")
+        .mockRejectedValue(
+          Object.assign(new Error("Invalid Facebook access token"), {
+            isAxiosError: true,
+          }),
+        );
+
+      const res = await request(app)
+        .post("/facebook-login")
+        .set("token", facebookToken);
+
+      expect(res.status).toBe(401);
+      expect(res.body.message).toContain("Facebook login failed");
     });
   });
 

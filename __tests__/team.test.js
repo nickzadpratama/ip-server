@@ -1,15 +1,7 @@
-/**
- * E2E Tests for TeamController
- * Testing all endpoints: GET /, POST /, GET /:id, PUT /:id, DELETE /:id
- * 
- * Run with: npm test -- team.test.js
- */
-
 const request = require('supertest');
 const app = require('../app');
 const { Team, sequelize } = require('../models');
 
-// Test data
 const testUser = {
   username: 'testuser',
   email: 'testuser@example.com',
@@ -28,23 +20,21 @@ const testTeam = {
 let authToken;
 
 describe('TeamController E2E Tests', () => {
-  // Setup before all tests - create test user and get auth token
+
   beforeAll(async () => {
     try {
-      // Sync database for testing
+
       await sequelize.sync({ force: true });
-      
-      // Register a test user
+
       await request(app).post('/register').send(testUser);
-      
-      // Login to get auth token
+
       const loginResponse = await request(app)
         .post('/login')
         .send({
           email: testUser.email,
           password: testUser.password
         });
-      
+
       if (loginResponse.status === 200) {
         authToken = loginResponse.body.access_token;
       } else {
@@ -56,7 +46,6 @@ describe('TeamController E2E Tests', () => {
     }
   });
 
-  // Cleanup after all tests
   afterAll(async () => {
     try {
       await sequelize.drop();
@@ -66,7 +55,6 @@ describe('TeamController E2E Tests', () => {
     }
   });
 
-  // Cleanup before each test
   beforeEach(async () => {
     try {
       await Team.destroy({ where: {}, truncate: true });
@@ -74,8 +62,6 @@ describe('TeamController E2E Tests', () => {
       console.error('Error in beforeEach:', error);
     }
   });
-
-  // ========== AUTH TESTS ==========
 
   describe('POST /register - Register new user', () => {
     it('should successfully register a new user', async () => {
@@ -164,8 +150,6 @@ describe('TeamController E2E Tests', () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Invalid email or password');
     });
-
-  // ========== TEAM CRUD TESTS ==========
 
   describe('GET / - Read all teams (with authentication)', () => {
     it('should fail without authentication token', async () => {
@@ -487,7 +471,6 @@ describe('TeamController E2E Tests', () => {
       expect(response.body).toHaveProperty('data');
       expect(response.body.data.id).toBe(createdTeamId);
 
-      // Verify team is actually deleted
       const getResponse = await request(app)
         .get(`/${createdTeamId}`)
         .set('Authorization', `Bearer ${authToken}`);
@@ -515,11 +498,9 @@ describe('TeamController E2E Tests', () => {
     });
   });
 
-  // ========== INTEGRATION TESTS ==========
-
   describe('Integration tests - Multiple operations', () => {
     it('should perform CRUD operations in sequence', async () => {
-      // Create
+
       const createResponse = await request(app)
         .post('/')
         .set('Authorization', `Bearer ${authToken}`)
@@ -535,21 +516,18 @@ describe('TeamController E2E Tests', () => {
       expect(createResponse.status).toBe(201);
       const teamId = createResponse.body.data.id;
 
-      // Read all
       const readAllResponse = await request(app)
         .get('/')
         .set('Authorization', `Bearer ${authToken}`);
       expect(readAllResponse.status).toBe(200);
       expect(readAllResponse.body.data.some(t => t.id === teamId)).toBe(true);
 
-      // Read one
       const readOneResponse = await request(app)
         .get(`/${teamId}`)
         .set('Authorization', `Bearer ${authToken}`);
       expect(readOneResponse.status).toBe(200);
       expect(readOneResponse.body.data.id).toBe(teamId);
 
-      // Update
       const updateResponse = await request(app)
         .put(`/${teamId}`)
         .set('Authorization', `Bearer ${authToken}`)
@@ -564,7 +542,6 @@ describe('TeamController E2E Tests', () => {
       expect(updateResponse.status).toBe(200);
       expect(updateResponse.body.data.name).toBe('Updated CRUD Team');
 
-      // Delete
       const deleteResponse = await request(app)
         .delete(`/${teamId}`)
         .set('Authorization', `Bearer ${authToken}`);
@@ -593,7 +570,6 @@ describe('TeamController E2E Tests', () => {
         expect(response.status).toBe(201);
       });
 
-      // Verify all teams were created
       const readResponse = await request(app)
         .get('/')
         .set('Authorization', `Bearer ${authToken}`);

@@ -1,634 +1,293 @@
-# P2-Challenge-1 (Server Side)
+# Football API — Individual Project Phase 2 (Server Side)
 
-> Tuliskan API Docs kamu di sini
+> API Documentation untuk server aplikasi **Football Hub**
+> (folder: `start/server` — Express 5 + Sequelize + PostgreSQL)
 
-Tema: Rent Room (Mami Kos)
+Football API adalah REST API untuk aplikasi Football Hub: autentikasi user
+(register/login manual, Google, dan Facebook), manajemen data klub sepak bola
+(CRUD), serta chatbot AI (Gemini) yang hanya menjawab pertanyaan seputar sepak
+bola Indonesia.
 
-# Mami Kos Server
-Mami Kos is an application to share and manage Mami Kos 
-boarding house. It performs standard CRUD actions based on RESTful concept.
+Seluruh response dikirim dalam format **JSON**.
 
-## This app has :
+## Daftar Isi
 
-RESTful endpoint for asset's CRUD operation
-JSON formatted response
- 
+- [Tech Stack](#tech-stack)
+- [Cara Menjalankan](#cara-menjalankan)
+- [Environment Variables](#environment-variables)
+- [Base URL & Format Data](#base-url--format-data)
+- [Autentikasi (JWT)](#autentikasi-jwt)
+- [Global Responses](#global-responses)
+- [Ringkasan Endpoint](#ringkasan-endpoint)
+- [Detail Endpoint](#detail-endpoint)
+  - [GET /genAI](#1-get-genai)
+  - [POST /register](#2-post-register)
+  - [POST /login](#3-post-login)
+  - [POST /google-login](#4-post-google-login)
+  - [POST /facebook-login](#5-post-facebook-login)
+  - [GET /](#6-get-)
+  - [POST /](#7-post-)
+  - [GET /:id](#8-get-id)
+  - [PUT /:id](#9-put-id)
+  - [DELETE /:id](#10-delete-id)
+- [Struktur Database](#struktur-database)
+- [Menjalankan Test](#menjalankan-test)
+- [Catatan & Perilaku yang Perlu Diketahui](#catatan--perilaku-yang-perlu-diketahui)
 
-## Tech Stack used to build this app :
+## Tech Stack
 
-Node JS
-Express JS framework
-PostgreSQL
+- Node.js + Express 5 (`express`)
+- PostgreSQL + Sequelize 6 (`sequelize`, `pg`, `sequelize-cli`)
+- JSON Web Token (`jsonwebtoken`) & `bcryptjs`
+- Google OAuth (`google-auth-library`) & Facebook Graph API (`axios`)
+- Google Gemini AI (`@google/genai`)
+- Jest + Supertest (testing)
 
-Base URL: https://localhost:3000
-Format Data: JSON
+## Cara Menjalankan
+
+```bash
+cd start/server
+npm install
+
+# 1. Siapkan database PostgreSQL (default ada di config/config.json):
+#    development -> Football_Api | test -> Football_Api_test
+npx sequelize-cli db:create
+
+# 2. Buat file .env (contoh daftar variabel ada di env-template.txt)
+cp env-template.txt .env
+
+# 3. Jalankan migrasi
+npx sequelize-cli db:migrate
+
+# 4. Jalankan server (default port 3000)
+node bin/www.js
+# atau dengan port lain:
+PORT=4000 node bin/www.js
+```
+
+## Environment Variables
+
+| Variable | Wajib | Fungsi |
+| --- | --- | --- |
+| `SECRET_KEY` | Ya | Secret key untuk `jwt.sign` / `jwt.verify`. |
+| `GOOGLE_CLIENT_ID` | Ya* | Audience saat verifikasi Google ID token (`POST /google-login`). |
+| `GEMINI_API_KEY` | Ya* | API key Gemini untuk `GET /genAI`. |
+| `GEMINI_MODEL` | Tidak | Model Gemini; default `gemini-3.8-flash`. |
+| `API_SPORTS_KEY` | Ya | API key API-Sports; hanya dipakai server untuk endpoint data tim dan pemain. |
+| `FACEBOOK_APP_SECRET` | Tidak | Dipakai untuk `appsecret_proof` jika Facebook mewajibkannya di pengaturan aplikasi. |
+| `DATABASE_URL` | Ya (production) | Koneksi database saat `NODE_ENV=production`. |
+| `PORT` | Tidak | Port server, default `3000`. |
+| `NODE_ENV` | Tidak | `development` (default) / `test` / `production`. |
+
+\* Di source code saat ini ada nilai fallback yang di-hardcode. Untuk keamanan,
+selalu isi nilainya dari `.env` dan jangan commit file `.env`.
+
+Saat `NODE_ENV !== "production"`, server otomatis membaca file `.env`
+lewat `dotenv`.
+
+Buat `GEMINI_API_KEY` dari Google AI Studio dan atur hanya di environment
+server (`start/server/.env` saat lokal atau secret/environment variables di
+platform deploy). Jangan gunakan key frontend/Maps, jangan commit key, dan
+restart server setelah menggantinya. Jika API mengembalikan 401, key tidak
+valid atau tidak diizinkan untuk Gemini API; periksa juga kuota dan akses
+model pada project Google Cloud yang terkait.
+
+### Facebook Login
+
+- Client: isi `VITE_FACEBOOK_APP_ID` di `start/client/.env` dengan App ID dari
+  Meta for Developers. Jangan masukkan App Secret ke client.
+- Server: isi `FACEBOOK_APP_SECRET` di `start/server/.env` hanya jika opsi
+  "Require App Secret" di pengaturan Facebook Login diaktifkan.
+- Di Meta for Developers, aktifkan Facebook Login dan JavaScript SDK, lalu
+  izinkan domain aplikasi (untuk local dev gunakan `localhost`). Development
+  server Vite menggunakan HTTPS lokal; buka origin tersebut dan setujui
+  sertifikat development browser.
+- Saat aplikasi Facebook masih dalam mode Development, gunakan akun yang sudah
+  ditambahkan sebagai admin, developer, tester, atau test user. Untuk pengguna
+  umum, aplikasi harus dipindahkan ke Live setelah memenuhi persyaratan Meta.
+- Pastikan izin `email` tersedia untuk aplikasi. Login memerlukan alamat email
+  yang dikembalikan Facebook agar dapat mencocokkan akun.
+- Untuk production, daftarkan domain HTTPS yang sama di pengaturan aplikasi
+  Facebook dan set env client/server pada platform deploy.
+
+## Base URL & Format Data
+
+| Environment | Base URL |
+| --- | --- |
+| Development | `http://localhost:3000` |
+| Production (dipakai client) | `https://football.nickz.online` |
+
+- Format data: **JSON** (`Content-Type: application/json`).
+- Client React (`start/client`) memakai base URL ini dari `src/api/auth.js`
+  dan bisa dioverride lewat environment variable `VITE_API_URL`.
+- Pada development client lokal, request chatbot `/genAI` diproxy oleh Vite ke
+  `http://localhost:3000` agar halaman HTTPS tidak memanggil API HTTP secara
+  langsung.
+- CORS diaktifkan untuk semua origin (`app.use(cors())`).
+
+## Autentikasi (JWT)
+
+Endpoint bertanda **Auth: Ya** wajib mengirim access token pada header:
+
+```
+Authorization: Bearer <access_token>
+```
+
+Cara mendapatkan `access_token`:
+
+1. `POST /register` (daftar user baru), lalu `POST /login`; **atau**
+2. `POST /google-login` dengan Google ID token; **atau**
+3. `POST /facebook-login` dengan Facebook access token.
+
+Token dibuat dengan `jwt.sign({ id, email }, SECRET_KEY)` — **tanpa** masa
+kedaluwarsa (`expiresIn`), jadi token berlaku sampai `SECRET_KEY` diganti.
+
+Middleware `authentication` (`middlewares/authentication.js`) akan:
+
+1. Mengambil header `authorization`, lalu memakai bagian setelah spasi pertama
+   sebagai token (`authorization.split(" ")[1]`).
+2. Memverifikasi token dan mencari user dengan `id` dari payload.
+3. Menyimpan data login ke `req.loginInfo = { userId, email, role }`.
+
+Jika header tidak ada, token invalid, atau user sudah tidak ada di database,
+server membalas **401** `{ "message": "Please login first" }`.
 
 ## Global Responses
-These responses are applied globally on all endpoints
 
-_Response (400 - SequelizeValidationError or SequelizeUniqueConstraintError)_
+Response berikut berlaku untuk semua endpoint (dihasilkan oleh
+`middlewares/errorHandler.js`):
 
-```json
-{
-  "message": validation error message
-}
-```
+| Status | Nama Error / Kondisi | Body Response |
+| --- | --- | --- |
+| 400 | `SequelizeValidationError`, `SequelizeUniqueConstraintError` | `{ "message": "<pesan validasi model>" }` |
+| 400 | `SequelizeDatabaseError`, `SequelizeForeignKeyConstraintError` | `{ "message": "Invalid input" }` |
+| 400 | `InvalidInput` | `{ "message": "Input is required" }` |
+| 401 | `InvalidLogin` | `{ "message": "Please input email or password" }` |
+| 401 | `LoginError` | `{ "message": "Invalid email or password" }` |
+| 401 | `Unauthorized`, `JsonWebTokenError` | `{ "message": "Please login first" }` |
+| 403 | `Forbidden` | `{ "message": "You don't have any access" }` |
+| 404 | `NotFound` | `{ "message": "Data not found" }` |
+| 500 | Error lain (mis. `TypeError`) | `{ "message": "Internal server error" }` |
 
-
-_Response (400 - SequelizeDatabaseError or SequelizeForeignKeyConstraintError)_
-
-```json
-{
-  "message": "Invalid input"
-}
-```
-
-_Response (401 - InvalidLogin)_
+Contoh pesan validasi model:
 
 ```json
-{
-  "message": "Please input email or password"
-}
+{ "message": "Username Required" }
 ```
-
-_Response (401 - LoginError)_
 
 ```json
-{
-  "message": "Invalid email or password"
-}
+{ "message": "Email must be unique" }
 ```
-
-_Response (401 - Unauthorized or JsonWebTokenError)_
 
 ```json
-{
-  "message": "Please login first"
-}
+{ "message": "Invalid email format" }
 ```
-
-_Response (403 - Forbidden)_
 
 ```json
-{
-  "message": "You don't have any access"
-}
+{ "message": "Name Team Required" }
 ```
 
-_Response (404 - NotFound)_
-
-```json
-{
-  "message": "Data not found"
-}
-```
-
-_Response (500 - ServerError)_
-
-```json
-{
-  "message": "Internal server error"
-}
-```
-
-# RESTful endpoints
-
-## GET /
-Landing Page
-
-Request Header
-not needed
-
-Request Body
-not needed
-
-_Response (200)_
-This is Mami kos Server
-
-## POST /pub/register
-Create new user
-
-Request Header
-not needed
-
-_Response (200)_
-
-```json
-{
-    "message": "Create new User",
-    "data": {
-        "role": "staff",
-        "id": 8,
-        "username": "nickz",
-        "email": "nick@gmail2346.com",
-        "phoneNumber": "021123456",
-        "address": "Jakarta",
-        "updatedAt": "2026-08-29T16:05:03.345Z",
-        "createdAt": "2026-08-29T16:05:03.345Z"
-    }
-}
-```
-
-Request Body
-
-```json
-{
-    "username": "<user username>",
-    "email": "<user email>",
-    "role": "<user role>",
-    "phoneNumber": "<user phoneNumber>",
-    "address": "<user address>",
-    "updatedAt": "2026-08-29T16:05:03.345Z",
-    "createdAt": "2026-08-29T16:05:03.345Z"
-}
-```
-
-## POST /login
-Login into server
-
-Request Header
-not needed
-
-Request Body
-
-```json
-{
-    "email": "<email to get insert into>",
-    "password": "<password to get insert into>",
-}
-```
-
-_Response (200)_
-access_token
-
-## GET /lodgings
-Create new user
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-not needed
-
-Response (200)
-
-```json
-{
-    "message": "Succeed read data Lodging",
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": "<lodging name>",
-            "facility": "<lodging facility>",
-            "roomCapacity": "<lodging roomCapacity>",
-            "imgUrl": "<lodging imgUrl>",
-            "location": "<lodging location>",
-            "price": "<lodging price>",
-            "typeId": "<lodging typeId>",
-            "authorId": "<lodging authorId>",
-            "User": {
-                "id": "<user id>",
-                "username": "<user username>",
-                "email": "<user email>",
-                "role": "<user role>",
-                "phoneNumber": "<user phoneNumber>",
-                "address": "<user address>"
-            }
-        },
-        {
-            "id": <given id by system>,
-            "name": "<lodging name>",
-            "facility": "<lodging facility>",
-            "roomCapacity": "<lodging roomCapacity>",
-            "imgUrl": "<lodging imgUrl>",
-            "location": "<lodging location>",
-            "price": "<lodging price>",
-            "typeId": "<lodging typeId>",
-            "authorId": "<lodging authorId>",
-            "User": {
-                "id": "<user id>",
-                "username": "<user username>",
-                "email": "<user email>",
-                "role": "<user role>",
-                "phoneNumber": "<user phoneNumber>",
-                "address": "<user address>"
-            }
-        },
-        ...
-    ]
-}
-```
-
-## GET /lodgings/:id
-Get single lodging as defined by the id provided
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-not needed
-
-Response (200)
-
-```json
-{
-    "message": "Succeed read data Lodging",
-    "data": {
-        "id": <given id by system>,
-        "name": "<lodging name>",
-        "facility": "<lodging facility>",
-        "roomCapacity": "<lodging roomCapacity>",
-        "imgUrl": "<lodging imgUrl>",
-        "location": "<lodging location>",
-        "price": "<lodging price>",
-        "typeId": "<lodging typeId>",
-        "authorId": "<lodging authorId>",
-        "User": {
-            "id": "<user id>",
-            "username": "<user username>",
-            "email": "<user email>",
-            "role": "<user role>",
-            "phoneNumber": "<user phoneNumber>",
-            "address": "<user address>"
-        }
-    }
-}
-```
-
-## POST /lodgings
-Create new lodging
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-
-```json
-{
-    "name": "<name to get insert into>",
-    "facility": "<facility to get insert into>",
-    "roomCapacity": "<roomCapacity to get insert into>",
-    "imgUrl": "<imgUrl to get insert into>",
-    "location": "<location to get insert into>",
-    "price": "<price to get insert into>",
-    "typeId": "<typeId to get insert into>",
-    "authorId": "<authorId to get insert into>"
-}
-```
-
-_Response (201)_
-
-```json
-{
-    "message": "Succeed create data lodging",
-    "data": {
-        "id": <given id by system>,
-        "name": "<lodging name>",
-        "facility": "<lodging facility>",
-        "roomCapacity": "<lodging roomCapacity>",
-        "imgUrl": "<lodging imgUrl>",
-        "location": "<lodging location>",
-        "price": "<lodging price>",
-        "typeId": "<lodging typeId>",
-        "authorId": "<lodging authorId>"
-    }
-}
-```
-
-## PUT /lodgings/:id
-Update a lodging defined by the id provided
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-
-```json
-{
-    "name": "<name to get insert into>",
-    "facility": "<facility to get insert into>",
-    "roomCapacity": "<roomCapacity to get insert into>",
-    "imgUrl": "<imgUrl to get insert into>",
-    "location": "<location to get insert into>",
-    "price": "<price to get insert into>",
-    "typeId": "<typeId to get insert into>",
-    "authorId": "<authorId to get insert into>"
-}
-```
-
-_Response (200)_
-
-```json
-{
-    "message": "Succeed update data lodging",
-    "data": {
-        "id": <given id by system>,
-        "name": "<lodging name>",
-        "facility": "<lodging facility>",
-        "roomCapacity": "<lodging roomCapacity>",
-        "imgUrl": "<lodging imgUrl>",
-        "location": "<lodging location>",
-        "price": "<lodging price>",
-        "typeId": "<lodging typeId>",
-        "authorId": "<lodging authorId>"
-    }
-}
-```
-
-## PATCH /lodgings/:id
-Update an image lodging defined by the id provided
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-
-```json
-{
-    "imgUrl": "<imgUrl to get insert into>",
-}
-```
-
-_Response (200)_
-
-```json
-{
-    "message": "Image <lodging name> success to update"
-}
-```
-
-## DELETE /lodgings/:id
-Delete a lodging defined by the id provided
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-not needed
-
-_Response (200)_
-
-```json
-{
-    "message": "<lodging name> succeed to delete",
-    "data": {
-        "id": <given id by system>,
-        "name": "<lodging name>",
-        "facility": "<lodging facility>",
-        "roomCapacity": "<lodging roomCapacity>",
-        "imgUrl": "<lodging imgUrl>",
-        "location": "<lodging location>",
-        "price": "<lodging price>",
-        "typeId": "<lodging typeId>",
-        "authorId": "<lodging authorId>"
-    }
-}
-```
-
-## GET /types
-Get all types
-
-Request Header
-
-```json
-{
-  "access_token": "<your access token>"
-}
-```
-
-Request Body
-not needed
-
-_Response (200)_
-
-```json
-{
-    "massage": "Succeed read data type",
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        },
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        },
-        ...
-    ]
-}
-```
-
-## POST /types
-Create types
-
-Request Header
-
-```json
-{
-    "access_token": "<your access token>"
-}
-```
-
-Request Body
-
-```json
-{
-    "name": "<name to get insert into>"
-}
-```
-
-_Response (201)_
-
-```json
-{
-    "massage": "Succeed read data type",
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        }
-    ]
-}
-```
-
-## PUT /types
-Update a type defined by the id provided
-
-Request Header
-
-```json
-{
-    "access_token": "<your access token>"
-}
-```
-
-Request Body
-
-```json
-{
-    "name": "<name to get insert into>"
-}
-```
-
-_Response (201)_
-
-```json
-{
-    "massage": "Succeed update data type",
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        }
-    ]
-}
-```
-
-## GET /pub/lodgings
-Get all lodgings public
-
-Request Header
-not needed
-
-Request Body
-not needed
-
-_Response (200)_
-
-```json
-{
-    "page": 1,
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": "<lodging name>",
-            "facility": "<lodging facility>",
-            "roomCapacity": "<lodging roomCapacity>",
-            "imgUrl": "<lodging imgUrl>",
-            "location": "<lodging location>",
-            "price": "<lodging price>",
-            "typeId": "<lodging typeId>",
-            "authorId": "<lodging authorId>",
-            "User": {
-                "id": "<user id>",
-                "username": "<user username>",
-                "email": "<user email>",
-                "role": "<user role>",
-                "phoneNumber": "<user phoneNumber>",
-                "address": "<user address>"
-            }
-        },
-        {
-            "id": <given id by system>,
-            "name": "<lodging name>",
-            "facility": "<lodging facility>",
-            "roomCapacity": "<lodging roomCapacity>",
-            "imgUrl": "<lodging imgUrl>",
-            "location": "<lodging location>",
-            "price": "<lodging price>",
-            "typeId": "<lodging typeId>",
-            "authorId": "<lodging authorId>",
-            "User": {
-                "id": "<user id>",
-                "username": "<user username>",
-                "email": "<user email>",
-                "role": "<user role>",
-                "phoneNumber": "<user phoneNumber>",
-                "address": "<user address>"
-            }
-        },
-        ...
-    ],
-    "totalData": 21,
-    "totalPage": 2,
-    "dataPerPage": 10,
-    "message": "Succeed read data Lodgings"
-}
-```
-
-## GET /pub/lodgings/:id
-Get single lodging as defined by the id provided
-
-Request Header
-not needed
-
-Request Body
-not needed
-
-_Response (200)_
-
-```json
-{
-    "message": "Succeed read detail lodging",
-    "data": 
-        {
-            "id": <given id by system>,
-            "name": "<lodging name>",
-            "facility": "<lodging facility>",
-            "roomCapacity": "<lodging roomCapacity>",
-            "imgUrl": "<lodging imgUrl>",
-            "location": "<lodging location>",
-            "price": "<lodging price>",
-            "typeId": "<lodging typeId>",
-            "authorId": "<lodging authorId>",
-        },
-}
-```
-
-## GET /pub/types
-Get all types public
-
-Request Header
-not needed
-
-Request Body
-not needed
-
-_Response (200)_
-
-```json
-{
-    "massage": "Succeed read data type",
-    "data": [
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        },
-        {
-            "id": <given id by system>,
-            "name": <type name>
-        },
-        ...
-    ]
-}
-```
+## Ringkasan Endpoint
+
+| # | Method | Endpoint | Auth | Deskripsi |
+| --- | --- | --- | --- | --- |
+| 1 | GET | `/genAI?input=<teks>` | Tidak | Tanya chatbot AI (khusus sepak bola Indonesia; pesan maksimal 500 karakter). |
+| 2 | POST | `/register` | Tidak | Daftar user baru. |
+| 3 | POST | `/login` | Tidak | Login dengan email & password → `access_token`. |
+| 4 | POST | `/google-login` | Tidak | Login dengan Google ID token (header `token`). |
+| 5 | POST | `/facebook-login` | Tidak | Login dengan Facebook access token (header `token`). |
+| 6 | GET | `/?search=<nama>` | Ya | Ambil semua team (opsional filter nama). |
+| 7 | POST | `/` | Ya | Tambah team baru. |
+| 8 | GET | `/:id` | Ya | Ambil detail team berdasarkan `id`. |
+| 9 | PUT | `/:id` | Ya | Update data team berdasarkan `id`. |
+| 10 | DELETE | `/:id` | Ya | Hapus team berdasarkan `id`. |
+| 11 | GET | `/sports/teams?country=<negara>` | Ya | Ambil daftar tim melalui API-Sports. |
+| 12 | GET | `/sports/teams?id=<id>` | Ya | Ambil detail tim melalui API-Sports. |
+| 13 | GET | `/sports/squads?team=<id>` | Ya | Ambil skuad tim melalui API-Sports. |
+| 14 | GET | `/sports/players?id=<id>&season=<tahun>` | Ya | Ambil statistik pemain melalui API-Sports. |
+
+## Fan club memberships
+
+Fan clubs are separate from legacy user-owned `Teams`. The client `/myTeam`
+page now lists confirmed fan club memberships, not legacy saved teams. Legacy
+rows and CRUD routes are preserved; no automatic backfill is performed because
+those rows have no API-Sports ID. Local votes are not membership evidence.
+
+### Deployment prerequisites
+
+1. Back up the database and review migration
+   `migrations/20261019090000-create-fan-club-memberships.js`.
+2. Apply pending migrations using the existing Sequelize CLI in the intended
+   environment (test on a disposable database first). This creates `FanClubs`
+   and `FanClubMemberships`; it does not modify or drop `Teams`.
+3. Set server-only `API_SPORTS_KEY` to an authorized API-Sports credential.
+   First join of an uncached club verifies its identity through the provider;
+   requests time out after 10 seconds. Cached joins, listing, and leaving do
+   not require a provider request. Provider failure returns 503 without joining.
+4. Deploy the backend before the client. The client uses `VITE_API_URL`.
+
+### Authenticated API
+
+All routes require `Authorization: Bearer <access_token>`. The verified token
+and user record determine membership ownership; body/query user IDs are ignored.
+
+- `GET /me/fan-clubs`: 200 `{ message, data: [membership] }`, only current user.
+- `PUT /me/fan-clubs/:externalTeamId`: 201 on first join, 200 if already joined;
+  returns `{ message, data: membership }`. No body is needed.
+- `DELETE /me/fan-clubs/:externalTeamId`: 204, including already absent membership.
+
+A membership contains `id`, `UserId`, `FanClubId`, timestamps, and `FanClub`
+metadata including `externalTeamId`. Squad navigation uses that external ID,
+never the database primary key. Membership is many-to-many and protected by
+unique `(UserId, FanClubId)` and catalog `(provider, externalTeamId)` indexes.
+Join uses Sequelize `findOrCreate` inside a transaction. Leaving removes only
+the authenticated user's relationship, not the club or another user's membership.
+Invalid ID: 400; unrecognized club: 404; missing/invalid/expired token: 401.
+
+### API-Sports proxy
+
+All API-Sports requests are proxied by authenticated backend endpoints so the
+provider key is never sent to the browser:
+
+- `GET /sports/teams?country=Indonesia` or `GET /sports/teams?id=<teamId>`
+- `GET /sports/squads?team=<teamId>`
+- `GET /sports/players?id=<playerId>&season=<year>`
+
+Set `API_SPORTS_KEY` in the backend environment (`start/server/.env` locally or
+the backend host's secret settings in production). Do not add it to a `VITE_`
+variable or commit the actual key.
+
+Successful provider responses are cached in backend memory for five minutes
+(up to 100 query variants), and concurrent identical requests share one
+provider call. This prevents repeated navigation from consuming quota on a
+single long-lived backend process. In serverless hosting the cache is
+best-effort and can be cleared whenever an instance is recycled.
+
+The UI disables duplicate joins, waits for server confirmation, exposes retryable
+errors, reloads on login/navigation/window focus, and discards results from an
+obsolete session. Leave requires confirmation. National teams are also permitted.
+
+### Validation
+
+`npm test -- --runInBand membership.test.js` runs isolated Supertest contracts
+with mocked models/provider, without opening or modifying a database. Existing
+`team.test.js` and `auth.test.js` use force-sync/drop: run them only against an
+explicitly verified disposable test database, serially. Before production, also
+test migration up/down and concurrent duplicate joins on PostgreSQL; mocked HTTP
+tests cannot prove database locking/constraint behavior. Test that ten simultaneous
+joins yield one membership and that two users can join the same club independently.
+
+### Personal My Teams updates
+
+Apply `20261019100000-add-membership-details.js` before deploying this version.
+The My Teams Update button uses the API-Sports external team ID, not a legacy
+Team row ID. `GET /me/fan-clubs/:externalTeamId` returns the current user's
+membership. `PATCH` on that URL accepts name, code, founded, stadium, city,
+and capacity and stores them in the membership's `details` JSONB column.
+The name must have 2–255 characters; optional year is an integer 1800–2100;
+optional capacity is a non-negative 32-bit integer. Empty numeric fields become
+null. Ownership always comes from the verified token. A non-member gets 404.
+These are personal overrides: shared FanClub metadata and other users' details
+are never changed. Leave removes these overrides along with the membership.
+`node scripts/check-membership-flow.js` checks persistence and isolation with
+temporary users, then cleans up those users and their memberships.
