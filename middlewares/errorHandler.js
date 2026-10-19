@@ -73,6 +73,11 @@ const errorHandler = (err, req, res, next) => {
     message = err.message;
   }
 
+  if (err.name === "InvalidSportsInput") {
+    status = 400;
+    message = err.message;
+  }
+
   res.status(status).json({ message });
 };
 

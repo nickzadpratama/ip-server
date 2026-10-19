@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 var cors = require("cors");
 const router = require("./routers");
+const authentication = require("./middlewares/authentication");
 const errorHandler = require("./middlewares/errorHandler");
 const app = express();
 const { GoogleGenAI } = require("@google/genai");
@@ -88,7 +89,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.get("/genAI", async (req, res, next) => {
+app.get("/genAI", authentication, async (req, res, next) => {
   try {
     const { input } = req.query;
 

@@ -73,6 +73,7 @@ PORT=4000 node bin/www.js
 | `GOOGLE_CLIENT_ID` | Ya* | Audience saat verifikasi Google ID token (`POST /google-login`). |
 | `GEMINI_API_KEY` | Ya* | API key Gemini untuk `GET /genAI`. |
 | `GEMINI_MODEL` | Tidak | Model Gemini; default `gemini-3.8-flash`. |
+| `API_SPORTS_KEY` | Ya | API key API-Sports; hanya dipakai server untuk endpoint data tim dan pemain. |
 | `FACEBOOK_APP_SECRET` | Tidak | Dipakai untuk `appsecret_proof` jika Facebook mewajibkannya di pengaturan aplikasi. |
 | `DATABASE_URL` | Ya (production) | Koneksi database saat `NODE_ENV=production`. |
 | `PORT` | Tidak | Port server, default `3000`. |
@@ -200,6 +201,10 @@ Contoh pesan validasi model:
 | 8 | GET | `/:id` | Ya | Ambil detail team berdasarkan `id`. |
 | 9 | PUT | `/:id` | Ya | Update data team berdasarkan `id`. |
 | 10 | DELETE | `/:id` | Ya | Hapus team berdasarkan `id`. |
+| 11 | GET | `/sports/teams?country=<negara>` | Ya | Ambil daftar tim melalui API-Sports. |
+| 12 | GET | `/sports/teams?id=<id>` | Ya | Ambil detail tim melalui API-Sports. |
+| 13 | GET | `/sports/squads?team=<id>` | Ya | Ambil skuad tim melalui API-Sports. |
+| 14 | GET | `/sports/players?id=<id>&season=<tahun>` | Ya | Ambil statistik pemain melalui API-Sports. |
 
 ## Fan club memberships
 
@@ -239,6 +244,25 @@ Join uses Sequelize `findOrCreate` inside a transaction. Leaving removes only
 the authenticated user's relationship, not the club or another user's membership.
 Invalid ID: 400; unrecognized club: 404; missing/invalid/expired token: 401.
 
+### API-Sports proxy
+
+All API-Sports requests are proxied by authenticated backend endpoints so the
+provider key is never sent to the browser:
+
+- `GET /sports/teams?country=Indonesia` or `GET /sports/teams?id=<teamId>`
+- `GET /sports/squads?team=<teamId>`
+- `GET /sports/players?id=<playerId>&season=<year>`
+
+Set `API_SPORTS_KEY` in the backend environment (`start/server/.env` locally or
+the backend host's secret settings in production). Do not add it to a `VITE_`
+variable or commit the actual key.
+
+Successful provider responses are cached in backend memory for five minutes
+(up to 100 query variants), and concurrent identical requests share one
+provider call. This prevents repeated navigation from consuming quota on a
+single long-lived backend process. In serverless hosting the cache is
+best-effort and can be cleared whenever an instance is recycled.
+
 The UI disables duplicate joins, waits for server confirmation, exposes retryable
 errors, reloads on login/navigation/window focus, and discards results from an
 obsolete session. Leave requires confirmation. National teams are also permitted.
@@ -252,3 +276,18 @@ explicitly verified disposable test database, serially. Before production, also
 test migration up/down and concurrent duplicate joins on PostgreSQL; mocked HTTP
 tests cannot prove database locking/constraint behavior. Test that ten simultaneous
 joins yield one membership and that two users can join the same club independently.
+
+### Personal My Teams updates
+
+Apply `20261019100000-add-membership-details.js` before deploying this version.
+The My Teams Update button uses the API-Sports external team ID, not a legacy
+Team row ID. `GET /me/fan-clubs/:externalTeamId` returns the current user's
+membership. `PATCH` on that URL accepts name, code, founded, stadium, city,
+and capacity and stores them in the membership's `details` JSONB column.
+The name must have 2–255 characters; optional year is an integer 1800–2100;
+optional capacity is a non-negative 32-bit integer. Empty numeric fields become
+null. Ownership always comes from the verified token. A non-member gets 404.
+These are personal overrides: shared FanClub metadata and other users' details
+are never changed. Leave removes these overrides along with the membership.
+`node scripts/check-membership-flow.js` checks persistence and isolation with
+temporary users, then cleans up those users and their memberships.

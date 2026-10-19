@@ -1,8 +1,3 @@
-/**
- * E2E Tests for AuthController
- * Testing authentication endpoints: POST /register, POST /login
- */
-
 const request = require("supertest");
 const app = require("../app");
 const { User, sequelize } = require("../models");
@@ -10,7 +5,6 @@ const { verifyToken } = require("../helpers/jwt");
 const { comparePassword } = require("../helpers/bcrypt");
 const axios = require("axios");
 
-// Mock google-auth-library supaya POST /google-login bisa diuji tanpa token Google asli
 jest.mock("google-auth-library", () => ({
   OAuth2Client: jest.fn(() => ({ verifyIdToken: mockVerifyIdToken })),
   mockVerifyIdToken: jest.fn(),
@@ -40,7 +34,7 @@ describe("AuthController E2E Tests", () => {
 
   beforeEach(async () => {
     try {
-      // Use delete instead of truncate to avoid foreign key issues
+
       await User.destroy({ where: {} });
     } catch (error) {
       console.error("Error in beforeEach:", error);

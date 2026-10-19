@@ -1,8 +1,7 @@
-// Isolated HTTP contract tests: no sync, migrations, or database connections.
 jest.mock("../models", () => ({
   User: { findByPk: jest.fn() },
   FanClub: { findOne: jest.fn(), findOrCreate: jest.fn() },
-  FanClubMembership: { findAll: jest.fn(), findOrCreate: jest.fn(), destroy: jest.fn() },
+  FanClubMembership: { findOne: jest.fn(), findAll: jest.fn(), findOrCreate: jest.fn(), destroy: jest.fn() },
   sequelize: { transaction: jest.fn((callback) => callback({})) },
 }));
 jest.mock("axios");
@@ -99,3 +98,37 @@ test("leave deletes only the authenticated user's relation", async () => {
   FanClub.findOne.mockResolvedValue(null);
   expect((await request(app).delete("/me/fan-clubs/42").set("Authorization", `Bearer ${token()}`)).status).toBe(204);
 });
+
+const edits = { name: "My Club", code: "test", founded: "1990", stadium: "My Stadium", city: "My City", capacity: "1000" };
+
+test("detail loads only the current user's membership using the external team ID", async () => {
+  FanClubMembership.findOne.mockResolvedValue({ ...membership, FanClub: club, details: {} });
+  const response = await request(app).get("/me/fan-clubs/42").set("Authorization", `Bearer ${token()}`);
+  expect(response.status).toBe(200);
+  expect(FanClubMembership.findOne.mock.calls[0][0].where).toEqual({ UserId: 1 });
+  expect(FanClubMembership.findOne.mock.calls[0][0].include[0].where.externalTeamId).toBe(42);
+});
+
+test("update persists personal details and ignores injected identity and club fields", async () => {
+  const update = jest.fn().mockResolvedValue(undefined);
+  FanClubMembership.findOne.mockResolvedValue({ ...membership, update });
+  const response = await request(app).patch("/me/fan-clubs/42").set("Authorization", `Bearer ${token()}`)
+    .send({ ...edits, UserId: 99, FanClubId: 99, externalTeamId: 99 });
+  expect(response.status).toBe(200);
+  expect(update).toHaveBeenCalledWith({ details: { ...edits, code: "TEST", founded: 1990, capacity: 1000 } });
+  expect(FanClubMembership.findOne.mock.calls[0][0].where).toEqual({ UserId: 1 });
+});
+
+test.each(["get", "patch"])("%s cannot access a team without the current user's membership", async (method) => {
+  FanClubMembership.findOne.mockResolvedValue(null);
+  expect((await request(app)[method]("/me/fan-clubs/42").set("Authorization", `Bearer ${token()}`).send(edits)).status).toBe(404);
+});
+
+test.each([{ name: " " }, { capacity: "-1" }, { capacity: "1.5" }, { founded: "abc" }, { founded: 1000 }, { city: {} }])(
+  "invalid personal update %j is not saved", async (invalid) => {
+    const update = jest.fn();
+    FanClubMembership.findOne.mockResolvedValue({ update });
+    expect((await request(app).patch("/me/fan-clubs/42").set("Authorization", `Bearer ${token()}`).send({ ...edits, ...invalid })).status).toBe(400);
+    expect(update).not.toHaveBeenCalled();
+  },
+);

@@ -110,8 +110,7 @@ class AuthController {
       if (error.name === "ServiceUnavailable") {
         return next(error);
       }
-      // Token Google invalid/kedaluwarsa gagal verifikasi → 401 (bukan
-      // 500), mengikuti konvensi googleLogin di folder example.
+
       next({ name: "LoginError" });
     }
   }
@@ -134,7 +133,6 @@ class AuthController {
           .digest("hex");
       }
 
-      // Verifikasi access token & ambil profil pemiliknya via Graph API.
       const { data: profile } = await axios.get(
         "https://graph.facebook.com/me",
         { params },

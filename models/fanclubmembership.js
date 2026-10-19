@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   FanClubMembership.init({
+    details: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
     UserId: { type: DataTypes.INTEGER, allowNull: false },
     FanClubId: { type: DataTypes.INTEGER, allowNull: false },
   }, {
